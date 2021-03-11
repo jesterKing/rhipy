@@ -1,0 +1,85 @@
+# Creating a specific material
+
+To create a specific material type we are going to use `RenderMaterial` from the
+`Rhino.Render` namespace.
+
+In this example we'll create a Paint material. To do so we'll need the type
+GUID. The different type GUIDs can be found under `RenderMaterial` static
+properties. In our case we need [`RenderMaterial.PaintMaterialGuid`](https://developer.rhino3d.com/api/RhinoCommon/html/P_Rhino_Render_RenderMaterial_PaintMaterialGuid.htm).
+
+A new instance we create with one of the static method [`RenderContent.Create()`
+overloads](https://developer.rhino3d.com/api/RhinoCommon/html/Overload_Rhino_Render_RenderContent_Create.htm).
+Using one of these overloads will result in the material being created _and_
+added to the persistent content list. In other words it will show up in the
+material editor.
+
+## Main structure of the script
+
+The script will be implemented as a script, not a command. It will roughly have
+the following structure:
+
+```py : <<Creation Script.*>>= ./create_specific_rendermaterial.py
+<<import necessary libraries>>
+<<check for an object selection>>
+<<create a paint material with random color>>
+<<assign the material to the object selection>>
+```
+
+## The imports
+
+We need access to the `Rhino.Render` namespace for the material and render
+content related classes. Further we want to access the document. For that we are
+going to use `scriptcontext`. We'll import just the namespaces or modules
+meaning we'll have to include these when using classes and functionality they
+provide. We're doing that for this script to make it clear where the used bits
+and pieces come from.
+
+To create a random color we'll need the `random` module along with access to `Color4f` from the `Rhino.Display` namespace.
+
+```py : <<import necessary libraries>>=
+import System
+import Rhino.Display
+import Rhino.Render
+import scriptcontext
+import random
+```
+
+## Retrieve object selection
+
+We'll keep the next part of the script simple. We're not going to ask the user to select anything. Instead the script relies on the selection already being made. So if no selection is made we exit the script early
+
+```py : <<check for an object selection>>=
+# get object selection
+object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+```
+
+## Create and setup the material
+
+To create the material we use `RenderContent.Create`. We don't need much else besides the render content GUID and the document.
+
+Once we have a material we need to bracket any changes we want to make between `BeginChange()` and `EndChange()` calls. Otherwise Rhino will ignore any programmatical changes to the render content because it is already in the document after creation.
+
+We set a name suffixed with a new GUID each time this material is created by the script. This so we don't end up with materials that have the same name. While it is possible to do so with a script names should really be unique.
+
+```py : <<create a paint material with random color>>=
+# create material
+render_material = Rhino.Render.RenderContent.Create(Rhino.Render.RenderMaterial.PaintMaterialGuid, Rhino.Render.RenderContent.ShowContentChooserFlags.None, scriptcontext.doc)
+render_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+render_material.Name = "PYSCRIPTCREATED " + System.Guid.NewGuid().ToString()
+random_color = Rhino.Display.Color4f(random.random(), random.random(), random.random(), 1.0)
+render_material.SetParameter("color", random_color)
+render_material.EndChange()
+```
+
+## Assign material to objects
+
+Now that we have a material we can assign it to each object in our selection.
+
+```py : <<assign the material to the object selection>>=
+# assign
+for ob in object_selection:
+    print("Adding material", render_material.Name, "to", ob)
+    ob.RenderMaterial = render_material
+    ob.CommitChanges()
+```
+

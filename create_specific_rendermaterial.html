@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="./style.css">
+	</head>
+	<body>
+	<h1>Creating a specific material</h1>
+<p>To create a specific material type we are going to use <code>RenderMaterial</code> from the
+<code>Rhino.Render</code> namespace.</p>
+<p>In this example we'll create a Paint material. To do so we'll need the type
+GUID. The different type GUIDs can be found under <code>RenderMaterial</code> static
+properties. In our case we need <a href="https://developer.rhino3d.com/api/RhinoCommon/html/P_Rhino_Render_RenderMaterial_PaintMaterialGuid.htm"><code>RenderMaterial.PaintMaterialGuid</code></a>.</p>
+<p>A new instance we create with one of the static method <a href="https://developer.rhino3d.com/api/RhinoCommon/html/Overload_Rhino_Render_RenderContent_Create.htm"><code>RenderContent.Create()</code>
+overloads</a>.
+Using one of these overloads will result in the material being created <em>and</em>
+added to the persistent content list. In other words it will show up in the
+material editor.</p>
+<h2>Main structure of the script</h2>
+<p>The script will be implemented as a script, not a command. It will roughly have
+the following structure:</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;Creation Script.*&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"><span class="fragmentuse">&lt;&lt;import necessary libraries&gt;&gt;</span>
+<span class="fragmentuse">&lt;&lt;check for an object selection&gt;&gt;</span>
+<span class="fragmentuse">&lt;&lt;create a paint material with random color&gt;&gt;</span>
+<span class="fragmentuse">&lt;&lt;assign the material to the object selection&gt;&gt;</span>
+</code></pre>
+</div></div><h2>The imports</h2>
+<p>We need access to the <code>Rhino.Render</code> namespace for the material and render
+content related classes. Further we want to access the document. For that we are
+going to use <code>scriptcontext</code>. We'll import just the namespaces or modules
+meaning we'll have to include these when using classes and functionality they
+provide. We're doing that for this script to make it clear where the used bits
+and pieces come from.</p>
+<p>To create a random color we'll need the <code>random</code> module along with access to <code>Color4f</code> from the <code>Rhino.Display</code> namespace.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;import necessary libraries&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">import System
+import Rhino.Display
+import Rhino.Render
+import scriptcontext
+import random
+</code></pre>
+</div></div><h2>Retrieve object selection</h2>
+<p>We'll keep the next part of the script simple. We're not going to ask the user to select anything. Instead the script relies on the selection already being made. So if no selection is made we exit the script early</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;check for an object selection&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"># get object selection
+object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+</code></pre>
+</div></div><h2>Create and setup the material</h2>
+<p>To create the material we use <code>RenderContent.Create</code>. We don't need much else besides the render content GUID and the document.</p>
+<p>Once we have a material we need to bracket any changes we want to make between <code>BeginChange()</code> and <code>EndChange()</code> calls. Otherwise Rhino will ignore any programmatical changes to the render content because it is already in the document after creation.</p>
+<p>We set a name suffixed with a new GUID each time this material is created by the script. This so we don't end up with materials that have the same name. While it is possible to do so with a script names should really be unique.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;create a paint material with random color&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"># create material
+render_material = Rhino.Render.RenderContent.Create(Rhino.Render.RenderMaterial.PaintMaterialGuid, Rhino.Render.RenderContent.ShowContentChooserFlags.None, scriptcontext.doc)
+render_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+render_material.Name = &quot;PYSCRIPTCREATED &quot; + System.Guid.NewGuid().ToString()
+random_color = Rhino.Display.Color4f(random.random(), random.random(), random.random(), 1.0)
+render_material.SetParameter(&quot;color&quot;, random_color)
+render_material.EndChange()
+</code></pre>
+</div></div><h2>Assign material to objects</h2>
+<p>Now that we have a material we can assign it to each object in our selection.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;assign the material to the object selection&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"># assign
+for ob in object_selection:
+    print(&quot;Adding material&quot;, render_material.Name, &quot;to&quot;, ob)
+    ob.RenderMaterial = render_material
+    ob.CommitChanges()
+</code></pre>
+</div></div>
+	</body>
+</html>
