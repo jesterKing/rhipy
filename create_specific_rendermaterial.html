@@ -35,11 +35,13 @@ import Rhino.Display
 import Rhino.Render
 import scriptcontext
 import random
+
 </code></pre>
 </div></div><h2>Retrieve object selection</h2>
 <p>We'll keep the next part of the script simple. We're not going to ask the user to select anything. Instead the script relies on the selection already being made. So if no selection is made we exit the script early</p>
 <div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;check for an object selection&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"># get object selection
 object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+
 </code></pre>
 </div></div><h2>Create and setup the material</h2>
 <p>To create the material we use <code>RenderContent.Create</code>. We don't need much else besides the render content GUID and the document.</p>
@@ -52,6 +54,7 @@ render_material.Name = &quot;PYSCRIPTCREATED &quot; + System.Guid.NewGuid().ToSt
 random_color = Rhino.Display.Color4f(random.random(), random.random(), random.random(), 1.0)
 render_material.SetParameter(&quot;color&quot;, random_color)
 render_material.EndChange()
+
 </code></pre>
 </div></div><h2>Assign material to objects</h2>
 <p>Now that we have a material we can assign it to each object in our selection.</p>

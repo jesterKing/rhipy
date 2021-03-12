@@ -42,6 +42,7 @@ import Rhino.Display
 import Rhino.Render
 import scriptcontext
 import random
+
 ```
 
 ## Retrieve object selection
@@ -51,6 +52,7 @@ We'll keep the next part of the script simple. We're not going to ask the user t
 ```py : <<check for an object selection>>=
 # get object selection
 object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+
 ```
 
 ## Create and setup the material
@@ -69,6 +71,7 @@ render_material.Name = "PYSCRIPTCREATED " + System.Guid.NewGuid().ToString()
 random_color = Rhino.Display.Color4f(random.random(), random.random(), random.random(), 1.0)
 render_material.SetParameter("color", random_color)
 render_material.EndChange()
+
 ```
 
 ## Assign material to objects
