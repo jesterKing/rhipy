@@ -4,6 +4,8 @@
 	</head>
 	<body>
 	<h1>Creating a specific material</h1>
+<p><em>written by Nathan 'jesterKing' Letwory</em></p>
+<h2>Introduction</h2>
 <p>To create a specific material type we are going to use <code>RenderMaterial</code> from the
 <code>Rhino.Render</code> namespace.</p>
 <p>In this example we'll create a Paint material. To do so we'll need the type
@@ -15,8 +17,10 @@ Using one of these overloads will result in the material being created <em>and</
 added to the persistent content list. In other words it will show up in the
 material editor.</p>
 <h2>Main structure of the script</h2>
-<p>The script will be implemented as a script, not a command. It will roughly have
-the following structure:</p>
+<p>The script will be implemented as a script, not a command. It will import the
+necessary modules and namespaces. It'll take note of the currently selected
+objects. Then it will create a Paint material with random color assigned to it.
+Finally the new material will be assigned to each of the selected objects.</p>
 <div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;Creation Script.*&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"><span class="fragmentuse">&lt;&lt;import necessary libraries&gt;&gt;</span>
 <span class="fragmentuse">&lt;&lt;check for an object selection&gt;&gt;</span>
 <span class="fragmentuse">&lt;&lt;create a paint material with random color&gt;&gt;</span>
@@ -64,13 +68,29 @@ render_material.EndChange()
 
 </code></pre>
 </div></div><h2>Assign material to objects</h2>
-<p>Now that we have a material we can assign it to each object in our selection.</p>
+<p>Now that we have a material we can assign it to each object in our selection.
+For Rhino to notice changes to objects in the document we need to do something
+similar like the method above for changing render content that is already in the
+document. We have to <code>CommitChanges()</code> on the object for the changes to stick.</p>
 <div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;assign the material to the object selection&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"># assign
 for ob in object_selection:
     print(&quot;Adding material&quot;, render_material.Name, &quot;to&quot;, ob)
     ob.RenderMaterial = render_material
     ob.CommitChanges()
 </code></pre>
-</div></div>
+</div></div><h2>Conclusion</h2>
+<p>It is relatively straightforward to programmatically create new render content
+in Rhino. There are a few mechanisms the programmer needs to be mindful of:
+bracketing of changes to render content, and explicitely committing changes made
+to document objects.</p>
+<p>Note that this particular implementation does not really check whether it is
+useful to even have a <code>RenderMaterial</code> assigned. It would be good to add that
+extra security.</p>
+<p>Furthermore the script could be improved with a piece of code that actually
+queries the user for object selection if none has been made.</p>
+<p>These improvements are left to the reader to implement, as the main goal here
+has been achieved: show how to create and assign a new material of a specific
+type.</p>
+
 	</body>
 </html>

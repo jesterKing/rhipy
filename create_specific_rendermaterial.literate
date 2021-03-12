@@ -1,5 +1,9 @@
 # Creating a specific material
 
+_written by Nathan 'jesterKing' Letwory_
+
+## Introduction
+
 To create a specific material type we are going to use `RenderMaterial` from the
 `Rhino.Render` namespace.
 
@@ -15,8 +19,10 @@ material editor.
 
 ## Main structure of the script
 
-The script will be implemented as a script, not a command. It will roughly have
-the following structure:
+The script will be implemented as a script, not a command. It will import the
+necessary modules and namespaces. It'll take note of the currently selected
+objects. Then it will create a Paint material with random color assigned to it.
+Finally the new material will be assigned to each of the selected objects.
 
 ```py : <<Creation Script.*>>= ./create_specific_rendermaterial.py
 <<import necessary libraries>>
@@ -84,6 +90,9 @@ render_material.EndChange()
 ## Assign material to objects
 
 Now that we have a material we can assign it to each object in our selection.
+For Rhino to notice changes to objects in the document we need to do something
+similar like the method above for changing render content that is already in the
+document. We have to `CommitChanges()` on the object for the changes to stick.
 
 ```py : <<assign the material to the object selection>>=
 # assign
@@ -92,4 +101,20 @@ for ob in object_selection:
     ob.RenderMaterial = render_material
     ob.CommitChanges()
 ```
+## Conclusion
 
+It is relatively straightforward to programmatically create new render content
+in Rhino. There are a few mechanisms the programmer needs to be mindful of:
+bracketing of changes to render content, and explicitely committing changes made
+to document objects.
+
+Note that this particular implementation does not really check whether it is
+useful to even have a `RenderMaterial` assigned. It would be good to add that
+extra security.
+
+Furthermore the script could be improved with a piece of code that actually
+queries the user for object selection if none has been made.
+
+These improvements are left to the reader to implement, as the main goal here
+has been achieved: show how to create and assign a new material of a specific
+type.
