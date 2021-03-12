@@ -48,10 +48,17 @@ object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
 <p>Once we have a material we need to bracket any changes we want to make between <code>BeginChange()</code> and <code>EndChange()</code> calls. Otherwise Rhino will ignore any programmatical changes to the render content because it is already in the document after creation.</p>
 <p>We set a name suffixed with a new GUID each time this material is created by the script. This so we don't end up with materials that have the same name. While it is possible to do so with a script names should really be unique.</p>
 <div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;create a paint material with random color&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"># create material
-render_material = Rhino.Render.RenderContent.Create(Rhino.Render.RenderMaterial.PaintMaterialGuid, Rhino.Render.RenderContent.ShowContentChooserFlags.None, scriptcontext.doc)
+render_material = Rhino.Render.RenderContent.Create(
+    Rhino.Render.RenderMaterial.PaintMaterialGuid,
+    Rhino.Render.RenderContent.ShowContentChooserFlags.None,
+    scriptcontext.doc)
 render_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
 render_material.Name = &quot;PYSCRIPTCREATED &quot; + System.Guid.NewGuid().ToString()
-random_color = Rhino.Display.Color4f(random.random(), random.random(), random.random(), 1.0)
+random_color = Rhino.Display.Color4f(
+    random.random(),
+    random.random(),
+    random.random(),
+    1.0)
 render_material.SetParameter(&quot;color&quot;, random_color)
 render_material.EndChange()
 
