@@ -1,0 +1,92 @@
+# Tweak texture mapping of textures in render material of object
+
+This is a simple and straight-forward script. We import a bunch of modules and
+namespaces we need, get the list of selected objects, loop over them and tweak
+the diffuse or base color textures.
+
+We'll assume for now that we are dealing with Rhino Custom or Rhino PBR
+materials.
+
+```py : <<the script.*>>= ./select_object_tweak_texture_mapping.py
+<<imports>>
+<<assume already selected objects>>
+<<loop over objects and tweak texture>>
+```
+
+## Get all selected objects
+
+We'll use a list comprehension to get the list of selected objects. Note that
+we're passing `False` to `IsSelected()`, since we are not interested in
+sub-objects, but rather the top level object.
+
+```py : <<assume already selected objects>>=
+obs = [ob for ob in sc.doc.Objects if ob.IsSelected(False)]
+```
+
+## Looping and tweaking
+
+Now that we have our object list we'll loop over each object and get its render
+material. For the material we'll determine the correct child slot, retrieve the
+texture, then change the repeat of its mapping.
+
+```py : <<loop over objects and tweak texture>>=
+for ob in obs:
+    <<get render material>>
+    <<get child slot>>
+    <<find texture>>
+    <<fiddle with texture>>
+```
+
+Simple ask for `RenderMaterial`. This should always work, but just in case, skip
+handling this any further if `None` was given.
+
+```py : <<get render material>>=
+render_material = ob.RenderMaterial
+if not render_material:
+    continue
+```
+
+For now we assume either Rhino native materials (basic material or PBR). To that
+end we'll simulate the render material and see if it is a PBR material.
+
+```py : <<get child slot>>=
+mat = render_material.SimulatedMaterial(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+if mat.IsPhysicallyBased and mat.PhysicallyBased:
+    slot = Rhino.Render.RenderMaterial.StandardChildSlots.PbrBaseColor
+else:
+    slot = Rhino.Render.RenderMaterial.StandardChildSlots.Diffuse
+```
+
+Now that we have the correct slot we can actually get the texture from our
+render material.
+
+```py : <<find texture>>=
+diffuse_texture = render_material.GetTextureFromUsage(slot)
+```
+
+All that is left is to get the repeat, tweak it and set it back. For render
+content to be properly updated we have to bracket it with BeginChange and
+EndChange, using a suitable change context. Since our script is like a UI we'll
+use the UI change context. Program or RealTimeUI would also work.
+
+```py : <<fiddle with texture>>=
+context = Rhino.Render.RenderContent.ChangeContexts.UI
+repeat = diffuse_texture.GetRepeat()
+print(repeat)
+repeat *= 2
+repeat.Z = 0
+print(repeat)
+diffuse_texture.BeginChange(context)
+diffuse_texture.SetRepeat(repeat, context)
+diffuse_texture.EndChange()
+```
+
+## Missing bits and pieces
+
+We still have to import everything we need:
+
+```py : <<imports>>=
+import scriptcontext as sc
+import Rhino
+import Rhino.Render
+```

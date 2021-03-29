@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="./style.css">
+	</head>
+	<body>
+	<h1>Tweak texture mapping of textures in render material of object</h1>
+<p>This is a simple and straight-forward script. We import a bunch of modules and
+namespaces we need, get the list of selected objects, loop over them and tweak
+the diffuse or base color textures.</p>
+<p>We'll assume for now that we are dealing with Rhino Custom or Rhino PBR
+materials.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;the script.*&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py"><span class="fragmentuse">&lt;&lt;imports&gt;&gt;</span>
+<span class="fragmentuse">&lt;&lt;assume already selected objects&gt;&gt;</span>
+<span class="fragmentuse">&lt;&lt;loop over objects and tweak texture&gt;&gt;</span>
+</code></pre>
+</div></div><h2>Get all selected objects</h2>
+<p>We'll use a list comprehension to get the list of selected objects. Note that
+we're passing <code>False</code> to <code>IsSelected()</code>, since we are not interested in
+sub-objects, but rather the top level object.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;assume already selected objects&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">obs = [ob for ob in sc.doc.Objects if ob.IsSelected(False)]
+</code></pre>
+</div></div><h2>Looping and tweaking</h2>
+<p>Now that we have our object list we'll loop over each object and get its render
+material. For the material we'll determine the correct child slot, retrieve the
+texture, then change the repeat of its mapping.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;loop over objects and tweak texture&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">for ob in obs:
+    <span class="fragmentuse">&lt;&lt;get render material&gt;&gt;</span>
+    <span class="fragmentuse">&lt;&lt;get child slot&gt;&gt;</span>
+    <span class="fragmentuse">&lt;&lt;find texture&gt;&gt;</span>
+    <span class="fragmentuse">&lt;&lt;fiddle with texture&gt;&gt;</span>
+</code></pre>
+</div></div><p>Simple ask for <code>RenderMaterial</code>. This should always work, but just in case, skip
+handling this any further if <code>None</code> was given.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;get render material&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">render_material = ob.RenderMaterial
+if not render_material:
+    continue
+</code></pre>
+</div></div><p>For now we assume either Rhino native materials (basic material or PBR). To that
+end we'll simulate the render material and see if it is a PBR material.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;get child slot&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">mat = render_material.SimulatedMaterial(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+if mat.IsPhysicallyBased and mat.PhysicallyBased:
+    slot = Rhino.Render.RenderMaterial.StandardChildSlots.PbrBaseColor
+else:
+    slot = Rhino.Render.RenderMaterial.StandardChildSlots.Diffuse
+</code></pre>
+</div></div><p>Now that we have the correct slot we can actually get the texture from our
+render material.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;find texture&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">diffuse_texture = render_material.GetTextureFromUsage(slot)
+</code></pre>
+</div></div><p>All that is left is to get the repeat, tweak it and set it back. For render
+content to be properly updated we have to bracket it with BeginChange and
+EndChange, using a suitable change context. Since our script is like a UI we'll
+use the UI change context. Program or RealTimeUI would also work.</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;fiddle with texture&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">context = Rhino.Render.RenderContent.ChangeContexts.UI
+repeat = diffuse_texture.GetRepeat()
+print(repeat)
+repeat *= 2
+repeat.Z = 0
+print(repeat)
+diffuse_texture.BeginChange(context)
+diffuse_texture.SetRepeat(repeat, context)
+diffuse_texture.EndChange()
+</code></pre>
+</div></div><h2>Missing bits and pieces</h2>
+<p>We still have to import everything we need:</p>
+<div class="codefragment"><div class="fragmentname"><span class="fragmentuse">&lt;&lt;imports&gt;&gt;</span>=</div><div class="code"><pre><code class="language-py">import scriptcontext as sc
+import Rhino
+import Rhino.Render
+</code></pre>
+</div></div>
+	</body>
+</html>
