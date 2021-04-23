@@ -63,6 +63,22 @@ code div {
     color: black;
 }
 
+
+ul {
+    list-style: none;
+}
+li::before {
+    /* content: "\2a20";*/
+    content: "\2bc8";
+    color: rgba(0,0,0,0.5);
+    margin-left: -1.5em;
+    padding-right: 1em;
+}
+
+li {
+    margin-bottom: 0.2em;
+}
+
 .hljs-keyword,
 .hljs-built_in,
 .hljs-type,

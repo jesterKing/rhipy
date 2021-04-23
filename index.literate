@@ -1,0 +1,16 @@
+
+# Literate Programming
+
+This site collects scripts and programs I have written using my
+[Literate
+Programming](https://marketplace.visualstudio.com/items?itemName=jesterking.literate)
+extension for Visual Studio Code. The extension is still in its early versions, but
+quite usable.
+
+To learn more about this paradigm you can start with the Wikipedia
+article on [Literate Programming](https://en.wikipedia.org/wiki/Literate_programming).
+
+# Rhino Python Scripts
+
+* [Create a specific material](create_specific_rendermaterial.html)
+* [Retrieve and tweak a RenderTexture](select_object_tweak_texture_mapping.html)
