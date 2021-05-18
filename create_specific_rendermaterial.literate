@@ -142,4 +142,4 @@ These improvements are left to the reader to implement, as the main goal here
 has been achieved: show how to create and assign a new material of a specific
 type.
 
-The generated script is in the repository [here](./create_specific_rendermaterial.py)
+The generated script is in the repository [here](https://github.com/jesterKing/rhipy/blob/master/create_specific_rendermaterial.py)
