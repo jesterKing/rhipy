@@ -7,7 +7,7 @@ import scriptcontext
 import random
 
 # get object selection
-object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected(False)]
 
 # only if we have a selection do the work
 if object_selection:

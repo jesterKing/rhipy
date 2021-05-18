@@ -65,7 +65,7 @@ made.
 
 ```py : <<check for an object selection>>=
 # get object selection
-object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected(False)]
 
 ```
 

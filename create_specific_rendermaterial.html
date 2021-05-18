@@ -50,7 +50,7 @@ to select anything. Instead the script relies on the selection already being
 made. We still create a material, but without a selection no assignment will be
 made.</p>
 <div class="codefragment"><div class="fragmentname">&lt;&lt;check for an object selection&gt;&gt;=</div><div class="code"><pre><code class="language-py"># get object selection
-object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected]
+object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected(False)]
 
 </code></pre>
 </div></div><h2>Create and setup the material</h2>
