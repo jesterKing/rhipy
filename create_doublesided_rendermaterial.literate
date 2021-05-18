@@ -1,0 +1,199 @@
+# Creating a double-sided material
+
+_written by Nathan 'jesterKing' Letwory_
+
+## Introduction
+
+To create a double-sided material type we are going to use `RenderMaterial` from
+the `Rhino.Render` namespace.
+
+A GUID is needed to create a material of a specific type. One can find many GUIDs
+in the [`RenderMaterial`
+properties](https://developer.rhino3d.com/api/RhinoCommon/html/Properties_T_Rhino_Render_RenderMaterial.htm),
+but unfortunately the double-sided material GUID is not exposed through the API
+yet.
+
+To figure out what the GUID of the double-sided material type is I create one
+manually in Rhino, then save the material as a file. The resulting `.rmtl` file
+can be opened in a text editor. In the `<material>` tag you'll find the
+`type-id` attribute that holds the GUID
+we need.
+
+Following these steps give us the information we need: a double-sided material
+type has the GUID `E6CD1973-B739-496E-AB69-32957FA48492`.
+
+A new instance we create with one of the static method [`RenderContent.Create()`
+overloads](https://developer.rhino3d.com/api/RhinoCommon/html/Overload_Rhino_Render_RenderContent_Create.htm).
+Using one of these overloads will result in the material being created _and_
+added to the persistent content list. In other words it will show up in the
+material editor.
+
+A double-sided material references two other materials. This means we need to
+create these materials as well. Such materials will be set as child content to
+the double-sided material.
+
+To create render materials as the child content for the double-sided material in
+the front and back slots we'll be using [`RenderContent.Create(Guid type,
+RenderContent parent, string childSlotName,
+RenderContent.ShowContentChooserFlags flags, RhinoDoc
+doc)`](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Render_RenderContent_Create.htm).
+
+
+## Create and setup the material
+
+We'll create and assign the material only when there is an object selection.
+
+```py : <<if objects are selected create material and assign>>=
+# only if we have a selection do the work
+if object_selection:
+    <<create a double-sided material>>
+    <<assign material to object selection>>
+```
+
+To create the double-sided parent material we use `RenderContent.Create`. We
+don't need much else besides the render content GUID and the document.
+
+Once we have a material we need to bracket any changes we want to make between
+`BeginChange()` and `EndChange()` calls. Otherwise Rhino will ignore any
+programmatical changes to the render content because it is already in the
+document after creation.
+
+We set a name suffixed with a new GUID each time this material is created by the
+script. This so we don't end up with materials that have the same name. While it
+is possible to do so with a script names should really be unique.
+
+Note that the `front_material` and `back_material` instances are created within
+the `BeginChange()` and `EndChange()` bracket of `render_material`. The creation
+of these materials is done using the
+[`RenderContent.Create()`](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Render_RenderContent_Create.htm)
+function that creates the material as child to a parent content using the given
+child slot name.
+
+```py : <<create a double-sided material>>=
+# create material
+render_material = Rhino.Render.RenderContent.Create(
+    System.Guid("E6CD1973-B739-496E-AB69-32957FA48492"),
+    Rhino.Render.RenderContent.ShowContentChooserFlags.None,
+    scriptcontext.doc)
+render_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+render_material.Name = "Double-Sided Material " + System.Guid.NewGuid().ToString()
+
+front_material = Rhino.Render.RenderContent.Create(
+    Rhino.Render.RenderMaterial.MetalMaterialGuid,
+    render_material,
+    "front",
+    Rhino.Render.RenderContent.ShowContentChooserFlags.None,
+    scriptcontext.doc)
+
+back_material = Rhino.Render.RenderContent.Create(
+    Rhino.Render.RenderMaterial.PlasterMaterialGuid,
+    render_material,
+    "back",
+    Rhino.Render.RenderContent.ShowContentChooserFlags.None,
+    scriptcontext.doc)
+random_color1 = Rhino.Display.Color4f(
+    random.random(),
+    random.random(),
+    random.random(),
+    1.0)
+random_color2 = Rhino.Display.Color4f(
+    random.random(),
+    random.random(),
+    random.random(),
+    1.0)
+# set color for front material
+front_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+front_material.SetParameter("color", random_color1)
+# set color for back material
+back_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+back_material.SetParameter("color", random_color2)
+render_material.EndChange()
+
+```
+
+## Assign material to objects
+
+Now that we have a material we can assign it to each object in our selection.
+For Rhino to notice changes to objects in the document we need to do something
+similar like the method above for changing render content that is already in the
+document. We have to `CommitChanges()` on the object for the changes to stick.
+
+```py : <<assign material to object selection>>=
+# assign
+for ob in object_selection:
+    print("Adding material", render_material.Name, "to", ob)
+    ob.RenderMaterial = render_material
+    ob.CommitChanges()
+```
+
+## The imports
+
+We need access to the `Rhino.Render` namespace for the material and render
+content related classes. Further we want to access the document. For that we are
+going to use `scriptcontext`. We'll import just the namespaces or modules
+meaning we'll have to include these when using classes and functionality they
+provide. We're doing that for this script to make it clear where the used bits
+and pieces come from.
+
+
+```py : <<import libraries>>=
+import System
+import Rhino.Display
+import Rhino.Render
+
+```
+
+To create a random color we'll need the `random` module along with access to
+`Color4f` from the `Rhino.Display` namespace.
+
+```py : <<import libraries>>=+
+import scriptcontext
+import random
+
+```
+
+## Main structure of the script
+
+The script will be implemented as a script, not a command. It will import the
+necessary modules and namespaces. It'll take note of the currently selected
+objects. Then it will create a double-sided material as we already explained.
+Finally the new material will be assigned to each of the selected objects.
+
+```py : <<Double-Sided Material Creation Script.*>>= ./create_doublesided_rendermaterial.py
+<<import libraries>>
+<<determine selected objects>>
+<<if objects are selected create material and assign>>
+```
+
+## Retrieve object selection
+
+We're not going to ask the user to select anything. Instead the script relies on
+the selection already being made. We still create a material, but without a
+selection no assignment will be made.
+
+```py : <<determine selected objects>>=
+# get object selection
+object_selection = [ob for ob in scriptcontext.doc.Objects if ob.IsSelected(False)]
+
+```
+
+
+## Conclusion
+
+It is relatively straightforward to programmatically create new render content
+in Rhino. There are a few mechanisms the programmer needs to be mindful of:
+bracketing of changes to render content, and explicitely committing changes made
+to document objects.
+
+Note that this particular implementation does not really check whether it is
+useful to even have a `RenderMaterial` assigned. It would be good to add that
+extra security.
+
+Furthermore the script could be improved with a piece of code that actually
+queries the user for object selection if none has been made.
+
+These improvements are left to the reader to implement, as the main goal here
+has been achieved: show how to create and assign a new material of a specific
+type.
+
+The generated script is in the repository [here](./create_specific_rendermaterial.py)
