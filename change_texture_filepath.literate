@@ -1,0 +1,108 @@
+# Change texture file path
+
+_written by Nathan 'jesterKing' Letwory_
+
+## Introduction
+
+TLDR; the generated script is
+[here](https://github.com/jesterKing/rhipy/blob/master/change_texture_filepath.py).
+
+In this script we'll retarget all image texture paths to a new path. We'll
+iterate over all `RenderMaterial`s and find all the image based textures.
+
+
+To actually change the file paths we need to use the `SetParameter` method on
+each texture we find.
+
+In this script you'll see how to:
+
+* Iterate the RenderMaterial table
+* Use `rhinoscriptsyntax` to browse for a folder
+* Use `GetParameter` in conjunction with `System.Convert`
+* Use `SetParameter` to change values on `RenderContent`
+* Bracket changes properly with `BeginChange` and `EndChange`
+
+## Changing the file path
+
+We will handle all `RenderContent` that are image-based. Since a
+`RenderContent`, including `RenderTexture`s can have child content we need to
+recurse through the entire ancestry to ensure we handle all cases.
+
+We start by asking for the first child content of the given `RenderContent`. It
+will be an instance of some `RenderContent`  if there is anything, otherwise
+`None`. For each child content we handle we'll recurse, then when back we make
+the change and finally ask for the next sibling.
+
+To make the change we first get the current filename of the child
+`RenderContent`. We need to use the `GetParameter` method to retrieve the value.
+There is one important issue to take note of: `GetParameter` returns values as
+`object`s. These implement the `IConvertible` interface. To get to the actual
+data we need to somehow convert this. A straight cast is not possible, but we
+can use the `Convert` mechanism. We know we need a string so we can use
+`System.Convert.ToString`.
+
+For changes to stick on `RenderContent` in Rhino we need to bracket them between
+proper `BeginChange` and `EndChange` calls on the content. For `BeginChange` we
+give the `Program` change context, since we are changing the data through the
+script.
+
+```py : <<method to handle render content>>=
+def handle_render_content(render_content, target):
+    child = render_content.FirstChild
+    while child:
+        handle_render_content(child, target)
+        if child.IsImageBased():
+            child.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+            source_path = System.Convert.ToString(child.GetParameter("filename"))
+            source_file = os.path.basename(source_path)
+            child.SetParameter("filename", target + os.sep + source_file)
+            child.EndChange()
+        child = child.NextSibling
+```
+
+## Iterating the render materials
+
+To iterate over all the `RenderMaterial`s available in our document we iterate over the `RhinoDoc` table called `RenderMaterials`:
+
+```py : <<iterate over all rendermaterials>>=
+for render_material in scriptcontext.doc.RenderMaterials:
+    <<handle render content>>
+```
+
+## Handle each render material
+
+```py : <<handle render content>>=
+handle_render_content(render_material, target)
+```
+
+## Ask the user for a target path
+
+```py : <<ask for target path>>=
+target = rhinoscriptsyntax.BrowseForFolder()
+```
+
+## Binding it all together
+
+Since we need to use `GetParameter` on a `RenderContent` it is important that we
+convert the data we get to the correct data type. `GetParameter` returns an
+`object` that implements the `IConvertible` interface. We can't directly cast
+from this object, instead we have to use the `Convert` mechanism. For this we
+import the `System.Convert`.
+
+For the folder choose dialog we import `rhinoscriptsyntax`, and to access the
+`RenderMaterial` table of the document we import `scriptcontext`.
+
+```py : <<change texture filepath.*>>= ./change_texture_filepath.py
+import os
+import rhinoscriptsyntax
+import scriptcontext
+import Rhino.Render
+import System.Convert
+
+<<method to handle render content>>
+
+<<ask for target path>>
+
+<<iterate over all rendermaterials>>
+
+```

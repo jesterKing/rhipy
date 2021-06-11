@@ -1,0 +1,88 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="./style.css">
+	</head>
+	<body>
+	<h1>Change texture file path</h1>
+<p><em>written by Nathan 'jesterKing' Letwory</em></p>
+<h2>Introduction</h2>
+<p>TLDR; the generated script is
+<a href="https://github.com/jesterKing/rhipy/blob/master/change_texture_filepath.py">here</a>.</p>
+<p>In this script we'll retarget all image texture paths to a new path. We'll
+iterate over all <code>RenderMaterial</code>s and find all the image based textures.</p>
+<p>To actually change the file paths we need to use the <code>SetParameter</code> method on
+each texture we find.</p>
+<p>In this script you'll see how to:</p>
+<ul>
+<li>Iterate the RenderMaterial table</li>
+<li>Use <code>rhinoscriptsyntax</code> to browse for a folder</li>
+<li>Use <code>GetParameter</code> in conjunction with <code>System.Convert</code></li>
+<li>Use <code>SetParameter</code> to change values on <code>RenderContent</code></li>
+<li>Bracket changes properly with <code>BeginChange</code> and <code>EndChange</code></li>
+</ul>
+<h2>Changing the file path</h2>
+<p>We will handle all <code>RenderContent</code> that are image-based. Since a
+<code>RenderContent</code>, including <code>RenderTexture</code>s can have child content we need to
+recurse through the entire ancestry to ensure we handle all cases.</p>
+<p>We start by asking for the first child content of the given <code>RenderContent</code>. It
+will be an instance of some <code>RenderContent</code>  if there is anything, otherwise
+<code>None</code>. For each child content we handle we'll recurse, then when back we make
+the change and finally ask for the next sibling.</p>
+<p>To make the change we first get the current filename of the child
+<code>RenderContent</code>. We need to use the <code>GetParameter</code> method to retrieve the value.
+There is one important issue to take note of: <code>GetParameter</code> returns values as
+<code>object</code>s. These implement the <code>IConvertible</code> interface. To get to the actual
+data we need to somehow convert this. A straight cast is not possible, but we
+can use the <code>Convert</code> mechanism. We know we need a string so we can use
+<code>System.Convert.ToString</code>.</p>
+<p>For changes to stick on <code>RenderContent</code> in Rhino we need to bracket them between
+proper <code>BeginChange</code> and <code>EndChange</code> calls on the content. For <code>BeginChange</code> we
+give the <code>Program</code> change context, since we are changing the data through the
+script.</p>
+<div class="codefragment"><div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;=</div><div class="code"><pre><code class="language-py">def handle_render_content(render_content, target):
+    child = render_content.FirstChild
+    while child:
+        handle_render_content(child, target)
+        if child.IsImageBased():
+            child.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+            source_path = System.Convert.ToString(child.GetParameter(&quot;filename&quot;))
+            source_file = os.path.basename(source_path)
+            child.SetParameter(&quot;filename&quot;, target + os.sep + source_file)
+            child.EndChange()
+        child = child.NextSibling
+</code></pre>
+</div></div><h2>Iterating the render materials</h2>
+<p>To iterate over all the <code>RenderMaterial</code>s available in our document we iterate over the <code>RhinoDoc</code> table called <code>RenderMaterials</code>:</p>
+<div class="codefragment"><div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;=</div><div class="code"><pre><code class="language-py">for render_material in scriptcontext.doc.RenderMaterials:
+    &lt;&lt;handle render content&gt;&gt;
+</code></pre>
+</div></div><h2>Handle each render material</h2>
+<div class="codefragment"><div class="fragmentname">&lt;&lt;handle render content&gt;&gt;=</div><div class="code"><pre><code class="language-py">handle_render_content(render_material, target)
+</code></pre>
+</div></div><h2>Ask the user for a target path</h2>
+<div class="codefragment"><div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;=</div><div class="code"><pre><code class="language-py">target = rhinoscriptsyntax.BrowseForFolder()
+</code></pre>
+</div></div><h2>Binding it all together</h2>
+<p>Since we need to use <code>GetParameter</code> on a <code>RenderContent</code> it is important that we
+convert the data we get to the correct data type. <code>GetParameter</code> returns an
+<code>object</code> that implements the <code>IConvertible</code> interface. We can't directly cast
+from this object, instead we have to use the <code>Convert</code> mechanism. For this we
+import the <code>System.Convert</code>.</p>
+<p>For the folder choose dialog we import <code>rhinoscriptsyntax</code>, and to access the
+<code>RenderMaterial</code> table of the document we import <code>scriptcontext</code>.</p>
+<div class="codefragment"><div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;=</div><div class="code"><pre><code class="language-py">import os
+import rhinoscriptsyntax
+import scriptcontext
+import Rhino.Render
+import System.Convert
+
+&lt;&lt;method to handle render content&gt;&gt;
+
+&lt;&lt;ask for target path&gt;&gt;
+
+&lt;&lt;iterate over all rendermaterials&gt;&gt;
+
+</code></pre>
+</div></div>
+	</body>
+</html>
