@@ -39,28 +39,28 @@ can use the <code>Convert</code> mechanism. We know we need a string so we can u
 proper <code>BeginChange</code> and <code>EndChange</code> calls on the content. For <code>BeginChange</code> we
 give the <code>Program</code> change context, since we are changing the data through the
 script.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;=</div><div class="code"><pre><code class="language-py">def handle_render_content(render_content, target):
+<div class="codefragment"><div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_render_content</span>(<span class="hljs-params">render_content, target</span>):
     child = render_content.FirstChild
-    while child:
+    <span class="hljs-keyword">while</span> child:
         handle_render_content(child, target)
-        if child.IsImageBased():
+        <span class="hljs-keyword">if</span> child.IsImageBased():
             child.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
-            source_path = System.Convert.ToString(child.GetParameter(&quot;filename&quot;))
+            source_path = System.Convert.ToString(child.GetParameter(<span class="hljs-string">&quot;filename&quot;</span>))
             source_file = os.path.basename(source_path)
-            child.SetParameter(&quot;filename&quot;, target + os.sep + source_file)
+            child.SetParameter(<span class="hljs-string">&quot;filename&quot;</span>, target + os.sep + source_file)
             child.EndChange()
         child = child.NextSibling
 </code></pre>
 </div></div><h2>Iterating the render materials</h2>
 <p>To iterate over all the <code>RenderMaterial</code>s available in our document we iterate over the <code>RhinoDoc</code> table called <code>RenderMaterials</code>:</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;=</div><div class="code"><pre><code class="language-py">for render_material in scriptcontext.doc.RenderMaterials:
+<div class="codefragment"><div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">for</span> render_material <span class="hljs-keyword">in</span> scriptcontext.doc.RenderMaterials:
     &lt;&lt;handle render content&gt;&gt;
 </code></pre>
 </div></div><h2>Handle each render material</h2>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;handle render content&gt;&gt;=</div><div class="code"><pre><code class="language-py">handle_render_content(render_material, target)
+<div class="codefragment"><div class="fragmentname">&lt;&lt;handle render content&gt;&gt;=</div><div class="code"><pre><code>handle_render_content(render_material, target)
 </code></pre>
 </div></div><h2>Ask the user for a target path</h2>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;=</div><div class="code"><pre><code class="language-py">target = rhinoscriptsyntax.BrowseForFolder()
+<div class="codefragment"><div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;=</div><div class="code"><pre><code>target = rhinoscriptsyntax.BrowseForFolder()
 </code></pre>
 </div></div><h2>Binding it all together</h2>
 <p>Since we need to use <code>GetParameter</code> on a <code>RenderContent</code> it is important that we
@@ -70,17 +70,17 @@ from this object, instead we have to use the <code>Convert</code> mechanism. For
 import the <code>System.Convert</code>.</p>
 <p>For the folder choose dialog we import <code>rhinoscriptsyntax</code>, and to access the
 <code>RenderMaterial</code> table of the document we import <code>scriptcontext</code>.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;=</div><div class="code"><pre><code class="language-py">import os
-import rhinoscriptsyntax
-import scriptcontext
-import Rhino.Render
-import System.Convert
+<div class="codefragment"><div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> rhinoscriptsyntax
+<span class="hljs-keyword">import</span> scriptcontext
+<span class="hljs-keyword">import</span> Rhino.Render
+<span class="hljs-keyword">import</span> System.Convert
 
 &lt;&lt;method to handle render content&gt;&gt;
 
-&lt;&lt;ask for target path&gt;&gt;
+&lt;&lt;ask <span class="hljs-keyword">for</span> target path&gt;&gt;
 
-&lt;&lt;iterate over all rendermaterials&gt;&gt;
+&lt;&lt;iterate over <span class="hljs-built_in">all</span> rendermaterials&gt;&gt;
 
 </code></pre>
 </div></div>
