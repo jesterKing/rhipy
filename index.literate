@@ -1,4 +1,3 @@
-
 # Literate Programming
 
 This site collects scripts and programs I have written using my
@@ -14,5 +13,6 @@ article on [Literate Programming](https://en.wikipedia.org/wiki/Literate_program
 
 * [Create a specific material](create_specific_rendermaterial.html)
 * [Create a double-sided material](create_doublesided_rendermaterial.html), an adaptation of the `create_specific_rendermaterial` script
+* [Create a PBR material with texture](create_pbr_material_with_textures.html)
 * [Retrieve and tweak a RenderTexture](select_object_tweak_texture_mapping.html)
 * [Change texture filepath](change_texture_filepath.html)

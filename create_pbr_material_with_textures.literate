@@ -1,0 +1,120 @@
+# Creating a physically based material with textures
+
+For this tool we'll be using `NewContentFromTypeId` to create the render content
+we want. The GUIDs for the contents we need are provided by the `ContentUuids`
+class in the `Rhino.Render` namespace.
+
+We want to create a bitmap texture and a physically based material. We'll take
+the GUIDs for these in several variables.
+
+```py : <<used guids>>=
+bitmap_texture_type_guid = Rhino.Render.ContentUuids.BitmapTextureType
+pbr_material_type_guid = Rhino.Render.ContentUuids.PhysicallyBasedMaterialType
+```
+
+Creation of the texture is done with `NewContentFromTypeId`, giving it
+`bitmap_texture_type_guid`. And since we are creating a bitmap texture in
+`bmtex` we'll set its `Filename` property to the path of a file we have on disk.
+
+```py : <<create bitmap texture>>=
+bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.BitmapTextureType)
+bmtex.Filename = "C:\\Users\\Nathan\\Pictures\\uvtester.png"
+
+simtex = bmtex.SimulatedTexture(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+```
+
+You see from `<<create bitmap texture>>` that we also retrieved the simulated
+texture `simtex` for our bitmap texture `bmtex`. We will need this later when
+we get to assign the texture to the base color slot of the PBR material.
+
+Now that we have our texture set up we can create our PBR material `pbr_rm`.
+Again we use `NewContentFromTypeId`, this time passing it
+`pbr_material_type_guid`.
+
+It is important to pay attention here, since using a PBR material is not as
+straightforward as it could be. The actual PBR API is found through the type
+`Rhino.DocObjects.PhysicallyBasedMaterial`. We can get to this from our original
+`pbr_rm`, but it requires two hoops to jump through: create the simulated
+material `sim`, and from that query the `PhysicallyBasedMaterial` through the
+`PhysicallyBased` property of the simulated material.
+
+This gives us the `Rhino.DocObjects.PhysicallyBasedMaterial` that has the API for
+accessing the PBR properties and setting the textures.
+
+```py : <<create pbr material and jump through hoops>>=
+# first create an empty PBR material
+pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.PhysicallyBasedMaterialType)
+
+# to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the
+# render material first.
+sim = pbr_rm.SimulatedMaterial(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+
+# from the simulated material we can get the Rhino.DocObjects.PhysicallyBasedMaterial
+pbr = sim.PhysicallyBased
+```
+
+We have now in `pbr` an instance of `Rhino.DocObjects.PhysicallyBasedMaterial`
+through which we can set the properties we want to set. In this example we'll
+make the material a glass-like material. `Opacity` we set to 0.0 and
+`OpacityIOR` will be 1.52. The `BaseColor` we set now to white, but that doesn't
+matter much, because we also set the texture.
+
+Note that the texture we pass on is a `Rhino.DocObjects.Texture`, not a
+`Rhino.Render.SimulatedTexture`. Luckily we can get the correct type by using
+the `Texture()` method on the `SimulatedTexture` `simtex`. The Texture we set to
+the `PBR_BaseColor` slot, which we find through `Rhino.DocObjects.TextureType`.
+
+```py : <<set PBR properties and texture>>=
+# now we have an instance of a type that has all the API you need to set the PBR
+# properties. For simple glass we set color to white, opacity to 0 and opacity
+# IOR to 1.52
+pbr.Opacity = 0.0
+pbr.OpacityIOR = 1.52
+pbr.BaseColor = Rhino.Display.Color4f.White
+
+pbr.SetTexture(simtex.Texture(), Rhino.DocObjects.TextureType.PBR_BaseColor)
+```
+
+There is one more step left: add the render content to the document. We want to
+use the `RenderMaterials` table on the `RhinoDoc`, because this ensures we can
+add a material without having to directly assign it to an object. Yet it shows
+up in the Materials panel of Rhino.
+
+We have now `pbr` that is a `Rhino.DocObjects.PhysicallyBasedMaterial`, yet we
+need an instance of `Rhino.Render.RenderMaterial`. There is the `FromMaterial`
+function on ` Rhino.Render.RenderMaterial`, but that takes a
+`Rhino.DocObjects.Material`. We are in luck, since the `PhysicallyBasedMaterial`
+we have provides us with a `Material` property that gives us that
+`Rhino.DocObjects.Material` instance we're looking for. We passed that into the
+`FromMaterial` function, along with the document we're working with.
+
+Now we can also set a name, and finally add it to the document `RenderMaterials`
+table.
+
+```py : <<convert into render material>>=
+# convert it back to RenderMaterial
+new_pbr = Rhino.Render.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
+# Set a good name
+new_pbr.Name = "My Own PBR Glass"
+
+# Add it to the document
+sc.doc.RenderMaterials.Add(new_pbr)
+```
+
+In the end we have the entire script that creates us a PBR material with a
+texture in the base color slot.
+
+```py : <<create pbr with textures.*>>= ./create_pbr_material_with_textures.py
+import Rhino
+import scriptcontext as sc
+
+<<used guids>>
+
+<<create bitmap texture>>
+
+<<create pbr material and jump through hoops>>
+
+<<set PBR properties and texture>>
+
+<<convert into render material>>
+```
