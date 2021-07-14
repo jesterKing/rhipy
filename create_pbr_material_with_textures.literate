@@ -1,5 +1,7 @@
 # Creating a physically based material with textures
 
+TLDR; See [here](https://github.com/jesterKing/rhipy/blob/master/create_pbr_material_with_textures.py) for the final script.
+
 For this tool we'll be using `NewContentFromTypeId` to create the render content
 we want. The GUIDs for the contents we need are provided by the `ContentUuids`
 class in the `Rhino.Render` namespace.
