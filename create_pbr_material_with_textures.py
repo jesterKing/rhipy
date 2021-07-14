@@ -1,20 +1,22 @@
-import Rhino
+import Rhino as rh
+import Rhino.Render as rr
+import Rhino.DocObjects as rd
 import scriptcontext as sc
 
-bitmap_texture_type_guid = Rhino.Render.ContentUuids.BitmapTextureType
-pbr_material_type_guid = Rhino.Render.ContentUuids.PhysicallyBasedMaterialType
+bitmap_texture_type_guid = rr.ContentUuids.BitmapTextureType
+pbr_material_type_guid = rr.ContentUuids.PhysicallyBasedMaterialType
 
-bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
+bmtex = rr.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
 bmtex.Filename = "C:\\Users\\Nathan\\Pictures\\uvtester.png"
 
-simtex = bmtex.SimulatedTexture(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+simtex = bmtex.SimulatedTexture(rr.RenderTexture.TextureGeneration.Allow)
 
 # first create an empty PBR material
-pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
+pbr_rm = rr.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
 
 # to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the
 # render material first.
-sim = pbr_rm.SimulatedMaterial(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+sim = pbr_rm.SimulatedMaterial(rr.RenderTexture.TextureGeneration.Allow)
 
 # from the simulated material we can get the Rhino.DocObjects.PhysicallyBasedMaterial
 pbr = sim.PhysicallyBased
@@ -24,12 +26,12 @@ pbr = sim.PhysicallyBased
 # IOR to 1.52
 pbr.Opacity = 0.0
 pbr.OpacityIOR = 1.52
-pbr.BaseColor = Rhino.Display.Color4f.White
+pbr.BaseColor = rh.Display.Color4f.White
 
-pbr.SetTexture(simtex.Texture(), Rhino.DocObjects.TextureType.PBR_BaseColor)
+pbr.SetTexture(simtex.Texture(), rd.TextureType.PBR_BaseColor)
 
 # convert it back to RenderMaterial
-new_pbr = Rhino.Render.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
+new_pbr = rr.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
 # Set a good name
 new_pbr.Name = "My Own PBR Glass"
 

@@ -1,6 +1,8 @@
 # Creating a physically based material with textures
 
-TLDR; See [here](https://github.com/jesterKing/rhipy/blob/master/create_pbr_material_with_textures.py) for the final script.
+TLDR; See
+[here](https://github.com/jesterKing/rhipy/blob/master/create_pbr_material_with_textures.py)
+for the final script.
 
 For this tool we'll be using `NewContentFromTypeId` to create the render content
 we want. The GUIDs for the contents we need are provided by the `ContentUuids`
@@ -10,8 +12,8 @@ We want to create a bitmap texture and a physically based material. We'll take
 the GUIDs for these in several variables.
 
 ```py : <<used guids>>=
-bitmap_texture_type_guid = Rhino.Render.ContentUuids.BitmapTextureType
-pbr_material_type_guid = Rhino.Render.ContentUuids.PhysicallyBasedMaterialType
+bitmap_texture_type_guid = rr.ContentUuids.BitmapTextureType
+pbr_material_type_guid = rr.ContentUuids.PhysicallyBasedMaterialType
 ```
 
 Creation of the texture is done with `NewContentFromTypeId`, giving it
@@ -19,10 +21,10 @@ Creation of the texture is done with `NewContentFromTypeId`, giving it
 `bmtex` we'll set its `Filename` property to the path of a file we have on disk.
 
 ```py : <<create bitmap texture>>=
-bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
+bmtex = rr.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
 bmtex.Filename = "C:\\Users\\Nathan\\Pictures\\uvtester.png"
 
-simtex = bmtex.SimulatedTexture(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+simtex = bmtex.SimulatedTexture(rr.RenderTexture.TextureGeneration.Allow)
 ```
 
 You see from `<<create bitmap texture>>` that we also retrieved the simulated
@@ -45,11 +47,11 @@ accessing the PBR properties and setting the textures.
 
 ```py : <<create pbr material and jump through hoops>>=
 # first create an empty PBR material
-pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
+pbr_rm = rr.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
 
 # to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the
 # render material first.
-sim = pbr_rm.SimulatedMaterial(Rhino.Render.RenderTexture.TextureGeneration.Allow)
+sim = pbr_rm.SimulatedMaterial(rr.RenderTexture.TextureGeneration.Allow)
 
 # from the simulated material we can get the Rhino.DocObjects.PhysicallyBasedMaterial
 pbr = sim.PhysicallyBased
@@ -72,9 +74,9 @@ the `PBR_BaseColor` slot, which we find through `Rhino.DocObjects.TextureType`.
 # IOR to 1.52
 pbr.Opacity = 0.0
 pbr.OpacityIOR = 1.52
-pbr.BaseColor = Rhino.Display.Color4f.White
+pbr.BaseColor = rh.Display.Color4f.White
 
-pbr.SetTexture(simtex.Texture(), Rhino.DocObjects.TextureType.PBR_BaseColor)
+pbr.SetTexture(simtex.Texture(), rd.TextureType.PBR_BaseColor)
 ```
 
 There is one more step left: add the render content to the document. We want to
@@ -95,7 +97,7 @@ table.
 
 ```py : <<convert into render material>>=
 # convert it back to RenderMaterial
-new_pbr = Rhino.Render.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
+new_pbr = rr.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
 # Set a good name
 new_pbr.Name = "My Own PBR Glass"
 
@@ -107,7 +109,9 @@ In the end we have the entire script that creates us a PBR material with a
 texture in the base color slot.
 
 ```py : <<create pbr with textures.*>>= ./create_pbr_material_with_textures.py
-import Rhino
+import Rhino as rh
+import Rhino.Render as rr
+import Rhino.DocObjects as rd
 import scriptcontext as sc
 
 <<used guids>>
