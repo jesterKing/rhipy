@@ -4,13 +4,13 @@ import scriptcontext as sc
 bitmap_texture_type_guid = Rhino.Render.ContentUuids.BitmapTextureType
 pbr_material_type_guid = Rhino.Render.ContentUuids.PhysicallyBasedMaterialType
 
-bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.BitmapTextureType)
+bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
 bmtex.Filename = "C:\\Users\\Nathan\\Pictures\\uvtester.png"
 
 simtex = bmtex.SimulatedTexture(Rhino.Render.RenderTexture.TextureGeneration.Allow)
 
 # first create an empty PBR material
-pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.PhysicallyBasedMaterialType)
+pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
 
 # to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the
 # render material first.

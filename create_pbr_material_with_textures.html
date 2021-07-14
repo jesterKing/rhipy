@@ -16,7 +16,7 @@ pbr_material_type_guid = Rhino.Render.ContentUuids.PhysicallyBasedMaterialType
 </div></div><p>Creation of the texture is done with <code>NewContentFromTypeId</code>, giving it
 <code>bitmap_texture_type_guid</code>. And since we are creating a bitmap texture in
 <code>bmtex</code> we'll set its <code>Filename</code> property to the path of a file we have on disk.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;create bitmap texture&gt;&gt;=</div><div class="code"><pre><code>bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.BitmapTextureType)
+<div class="codefragment"><div class="fragmentname">&lt;&lt;create bitmap texture&gt;&gt;=</div><div class="code"><pre><code>bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
 bmtex.Filename = <span class="hljs-string">&quot;C:\\Users\\Nathan\\Pictures\\uvtester.png&quot;</span>
 
 simtex = bmtex.SimulatedTexture(Rhino.Render.RenderTexture.TextureGeneration.Allow)
@@ -36,7 +36,7 @@ material <code>sim</code>, and from that query the <code>PhysicallyBasedMaterial
 <p>This gives us the <code>Rhino.DocObjects.PhysicallyBasedMaterial</code> that has the API for
 accessing the PBR properties and setting the textures.</p>
 <div class="codefragment"><div class="fragmentname">&lt;&lt;create pbr material and jump through hoops&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-comment"># first create an empty PBR material</span>
-pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.PhysicallyBasedMaterialType)
+pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
 
 <span class="hljs-comment"># to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the</span>
 <span class="hljs-comment"># render material first.</span>

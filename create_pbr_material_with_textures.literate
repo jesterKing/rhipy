@@ -19,7 +19,7 @@ Creation of the texture is done with `NewContentFromTypeId`, giving it
 `bmtex` we'll set its `Filename` property to the path of a file we have on disk.
 
 ```py : <<create bitmap texture>>=
-bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.BitmapTextureType)
+bmtex = Rhino.Render.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
 bmtex.Filename = "C:\\Users\\Nathan\\Pictures\\uvtester.png"
 
 simtex = bmtex.SimulatedTexture(Rhino.Render.RenderTexture.TextureGeneration.Allow)
@@ -45,7 +45,7 @@ accessing the PBR properties and setting the textures.
 
 ```py : <<create pbr material and jump through hoops>>=
 # first create an empty PBR material
-pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(Rhino.Render.ContentUuids.PhysicallyBasedMaterialType)
+pbr_rm = Rhino.Render.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
 
 # to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the
 # render material first.
