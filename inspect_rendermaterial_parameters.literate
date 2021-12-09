@@ -1,0 +1,72 @@
+# Inspecting a RenderMaterial and its parameters
+
+_written by Nathan 'jesterKing' Letwory_
+
+The `RenderMaterial` is the class that represents materials in Rhino. The same
+class is used for all different materials that are provided by Rhino, and even
+non-Rhino materials are supposed to implement this.
+
+The main way to access a `RenderMaterial` parameters, the properties that
+determine the visual appearance of the material when rendered, is through the
+methods `GetParameter` and `SetParameter`. And therein also lies the problem.
+
+To be able to successfully access the parameters you need to know the names of
+these parameters. But by itself there is no obvious way how to find the names
+out. And each material type will have its own set of parameters.
+
+
+``` py : <<inpect render material parameters.*>>= ./inspect_rendermaterial_parameters.py
+import scriptcontext as sc
+import clr
+
+clr.AddReference('System.Xml')
+import System.Xml as xml
+
+rms = list(sc.doc.RenderMaterials)
+
+<<loop over each rm and inspect>>
+```
+
+For each material we are going to access the `Xml` property. This property
+provides a description of the material in question in XML-form. In this XML
+document we are going to look for the `<parameters>` tag. This is essentially
+where all the parameters of a material are expressed.
+
+On each iteration of the loop we are going to create an XML document and load
+the XML provided by the `RenderMaterial` into that document. Then we can look
+for the `parameters` tag.
+
+``` py : <<loop over each rm and inspect>>=
+for rm in rms:
+    print('material:', rm.Name)
+    rmdoc = xml.XmlDocument()
+    rmdoc.LoadXml(rm.Xml)
+    params = rmdoc.DocumentElement.SelectSingleNode('parameters')
+    <<loop over all parameters and print>>
+```
+
+Now that we have this node `<parameters>` we can iterate over its children, and
+show the information we have learned. The name of each child node is the name of
+the parameter we need for proper usage of the `GetParameter` and `SetParameter`
+methods.
+
+We can start by getting the first child, and then continue by asking each one
+for its next sibling until we got none.
+
+To understand what data type each parameter is we ask for the `type` attribute.
+This tells us whether a parameter is a boolean, or a string, and so on.
+
+``` py : <<loop over all parameters and print>>=
+param = params.FirstChild
+while param:
+    param_type = param.GetAttributeNode('type')
+    try:
+        param_type = param_type.Value
+    except:
+        param_type = 'N/A'
+
+    print('parameter', param.Name, 'is a', param_type, 'with value', param.InnerXml)
+    param = param.NextSibling
+```
+
+The generated script is in the repository [here](https://github.com/jesterKing/rhipy/blob/master/inspect_rendermaterial_parameters.py)

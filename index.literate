@@ -16,3 +16,4 @@ article on [Literate Programming](https://en.wikipedia.org/wiki/Literate_program
 * [Create a PBR material with texture](create_pbr_material_with_textures.html)
 * [Retrieve and tweak a RenderTexture](select_object_tweak_texture_mapping.html)
 * [Change texture filepath](change_texture_filepath.html)
+* [Inspect RenderMaterial Parameters by code](inspect_rendermaterial_parameters.html)
