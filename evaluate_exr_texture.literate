@@ -1,0 +1,124 @@
+# Reading an EXR texture using RDK
+
+This example is created to answer [this
+topic](https://discourse.mcneel.com/t/help-get-floating-point-value-from-tiff-but-i-get-values-of-255/137802).
+We'll look at how to create a `RenderTexture` from an EXR file using the RDK. Originally the goal was to load a TIFF, but at the moment Rhino does not support TIFF images with values over 1.0.
+
+The generated script is [evaluate_exr_texture.py](https://github.com/jesterKing/rhipy/blob/master/evaluate_exr_texture.py)
+
+We start by importing the namespace we need: `Rhino` to give us access to all the sub-namespaces, primarily `Rhino.Render` and `Rhino.Geometry`.
+
+This script will ask the user to pick an EXR file. When a file has been selected
+we'll `<<create the HDR render texture>>`. In Rhino RDK all render textures can
+be evaluated to get color values for a specific point in a UV space, including
+textures based on images. For that we `<<get the evaluator from the texture>>`.
+
+With the evaluator in hand we can do a `<<double loop over evaluator to get values>>`.
+In this example we'll do every 1013th pixel of the input image. This is to
+ensure we get varying values in case of an input image with a regular pattern.
+
+``` py : <<evaluating an EXR texture.*>>= ./evaluate_exr_texture.py
+import Rhino
+
+file_dialog = Rhino.UI.OpenFileDialog()
+file_dialog.Filter = "EXR (*.exr)|*.exr"
+if file_dialog.ShowDialog():
+    print(file_dialog.FileName)
+    <<create the HDR render texture>>
+    <<get the evaluator from the texture>>
+    <<double loop over evaluator to get values>>
+```
+
+## Creating the HDR texture
+
+We want to create an HDR render texture that is not attached to the Rhino
+document, nor should it be visible in the UI. For that we use
+`RenderContentType.NewContentFromTypeId`.
+
+```  py  : <<create the HDR render texture>>=
+render_texture = Rhino.Render.RenderContentType.NewContentFromTypeId(
+    Rhino.Render.ContentUuids.HDRTextureType
+)
+```
+
+When the `render_texture` has been created the next step is to set the file we
+had the user pick. As most of the `RenderContent` modification methods we have
+to bracket the `SetParameter` call correctly. Since we are doing all this
+programmatically the correct context is `ChangeContexts.Program`. Without the
+bracketing changes made to the `render_texture` will not be picked up.
+
+```   py   : <<create the HDR render texture>>=+
+render_texture.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+render_texture.SetParameter("filename", file_dialog.FileName)
+render_texture.EndChange()
+```
+
+## Getting the evaluator
+
+```  py  : <<get the evaluator from the texture>>=
+evaluator = render_texture.CreateEvaluator(Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange)
+```
+
+## Looping over texture UV space
+
+The texture size is retrieved by using `PixelSize2`. Since it returns a Nullable
+type check we have actually something.
+
+```  py  : <<double loop over evaluator to get values>>=
+size = render_texture.PixelSize2
+if size:
+    width = size[0]
+    height = size[1]
+```
+
+Correct access vector needs half pixel values. They are calculated by dividing `0.5` by the width and height of the texture respectively.
+
+```   py   : <<double loop over evaluator to get values>>=+
+    half_pixel_u = 0.5 / width
+    half_pixel_v = 0.5 / height
+```
+
+Due to the nature of IronPython and using methods that have `ref` parameters we
+need to set up a `Rhino.Display.Color4f`. This is also a good time to initialize
+the rest of the variables we'll be using in the double loop.
+
+Since we are evaluating an image-based render texture we don't need
+differentials, so we set up a `dummy_duvw` set to `(0.0, 0.0, 0.0)`.
+
+```    py    : <<double loop over evaluator to get values>>=+
+    col4f = Rhino.Display.Color4f()
+    pt = Rhino.Geometry.Point3d.Origin
+    dummy_duvw = Rhino.Geometry.Vector3d.Zero
+    count = 0
+```
+
+Finally in the double loop over the height and the width of the texture we
+calculate the access vector. Since we're doing a simple 2D texture access we
+only need to calculate `X` and `Y`, the `Z` for the UVW space is unneeded, so
+kept at `0.0`.
+
+For each coordinate component in turn the `x` is transformed to 0.0-1.0 space.
+
+To access the color we use the `GetColor` overload that takes a `ref Color4f`.
+This version is _much_ faster than the other overload. The `col4f` we
+initialized earlier appears on both the left-hand and the right-hand side of the
+assignment operator. On the left side we have `ok` in which the `boolean`
+returned by `GetColor` is set, and the updated value of `col4f` will be right
+after the `ok`.
+
+If the color was retrieved successfully `ok` will be `True` and we can print the
+color values.
+
+```     py     : <<double loop over evaluator to get values>>=+
+    for y in range(height):
+        for x in range(width):
+            if count % 1013 == 0:
+                pt.X = float(x) / float(width) + half_pixel_u
+                pt.Y = float(y) / float(height) + half_pixel_v
+
+                ok, col4f = evaluator.GetColor(pt, dummy_duvw, dummy_duvw, col4f)
+
+                if ok:
+                    print col4f.R, col4f.G, col4f.B, col4f.A
+        count += 1
+```

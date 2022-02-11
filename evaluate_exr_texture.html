@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+  <h1>Reading an EXR texture using RDK</h1>
+<p>This example is created to answer <a href="https://discourse.mcneel.com/t/help-get-floating-point-value-from-tiff-but-i-get-values-of-255/137802">this
+topic</a>.
+We'll look at how to create a <code>RenderTexture</code> from an EXR file using the RDK. Originally the goal was to load a TIFF, but at the moment Rhino does not support TIFF images with values over 1.0.</p>
+<p>The generated script is <a href="https://github.com/jesterKing/rhipy/blob/master/evaluate_exr_texture.py">evaluate_exr_texture.py</a></p>
+<p>We start by importing the namespace we need: <code>Rhino</code> to give us access to all the sub-namespaces, primarily <code>Rhino.Render</code> and <code>Rhino.Geometry</code>.</p>
+<p>This script will ask the user to pick an EXR file. When a file has been selected
+we'll <code>&lt;&lt;create the HDR render texture&gt;&gt;</code>. In Rhino RDK all render textures can
+be evaluated to get color values for a specific point in a UV space, including
+textures based on images. For that we <code>&lt;&lt;get the evaluator from the texture&gt;&gt;</code>.</p>
+<p>With the evaluator in hand we can do a <code>&lt;&lt;double loop over evaluator to get values&gt;&gt;</code>.
+In this example we'll do every 1013th pixel of the input image. This is to
+ensure we get varying values in case of an input image with a regular pattern.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;evaluating an EXR texture.*&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">import</span> Rhino
+
+file_dialog = Rhino.UI.OpenFileDialog()
+file_dialog.Filter = <span class="hljs-string">&quot;EXR (*.exr)|*.exr&quot;</span>
+<span class="hljs-keyword">if</span> file_dialog.ShowDialog():
+    <span class="hljs-built_in">print</span>(file_dialog.FileName)
+    &lt;&lt;create the HDR render texture&gt;&gt;
+    &lt;&lt;get the evaluator <span class="hljs-keyword">from</span> the texture&gt;&gt;
+    &lt;&lt;double loop over evaluator to get values&gt;&gt;
+</code></pre>
+
+</div>
+</div><h2>Creating the HDR texture</h2>
+<p>We want to create an HDR render texture that is not attached to the Rhino
+document, nor should it be visible in the UI. For that we use
+<code>RenderContentType.NewContentFromTypeId</code>.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;create the HDR render texture&gt;&gt;=</div>
+<div class="code">
+<pre><code>render_texture = Rhino.Render.RenderContentType.NewContentFromTypeId(
+    Rhino.Render.ContentUuids.HDRTextureType
+)
+</code></pre>
+
+</div>
+</div><p>When the <code>render_texture</code> has been created the next step is to set the file we
+had the user pick. As most of the <code>RenderContent</code> modification methods we have
+to bracket the <code>SetParameter</code> call correctly. Since we are doing all this
+programmatically the correct context is <code>ChangeContexts.Program</code>. Without the
+bracketing changes made to the <code>render_texture</code> will not be picked up.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;create the HDR render texture&gt;&gt;=+</div>
+<div class="code">
+<pre><code>render_texture.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
+render_texture.SetParameter(<span class="hljs-string">&quot;filename&quot;</span>, file_dialog.FileName)
+render_texture.EndChange()
+</code></pre>
+
+</div>
+</div><h2>Getting the evaluator</h2>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;get the evaluator from the texture&gt;&gt;=</div>
+<div class="code">
+<pre><code>evaluator = render_texture.CreateEvaluator(Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange)
+</code></pre>
+
+</div>
+</div><h2>Looping over texture UV space</h2>
+<p>The texture size is retrieved by using <code>PixelSize2</code>. Since it returns a Nullable
+type check we have actually something.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=</div>
+<div class="code">
+<pre><code>size = render_texture.PixelSize2
+<span class="hljs-keyword">if</span> size:
+    width = size[<span class="hljs-number">0</span>]
+    height = size[<span class="hljs-number">1</span>]
+</code></pre>
+
+</div>
+</div><p>Correct access vector needs half pixel values. They are calculated by dividing <code>0.5</code> by the width and height of the texture respectively.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+</div>
+<div class="code">
+<pre><code>    half_pixel_u = <span class="hljs-number">0.5</span> / width
+    half_pixel_v = <span class="hljs-number">0.5</span> / height
+</code></pre>
+
+</div>
+</div><p>Due to the nature of IronPython and using methods that have <code>ref</code> parameters we
+need to set up a <code>Rhino.Display.Color4f</code>. This is also a good time to initialize
+the rest of the variables we'll be using in the double loop.</p>
+<p>Since we are evaluating an image-based render texture we don't need
+differentials, so we set up a <code>dummy_duvw</code> set to <code>(0.0, 0.0, 0.0)</code>.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+</div>
+<div class="code">
+<pre><code>    col4f = Rhino.Display.Color4f()
+    pt = Rhino.Geometry.Point3d.Origin
+    dummy_duvw = Rhino.Geometry.Vector3d.Zero
+    count = <span class="hljs-number">0</span>
+</code></pre>
+
+</div>
+</div><p>Finally in the double loop over the height and the width of the texture we
+calculate the access vector. Since we're doing a simple 2D texture access we
+only need to calculate <code>X</code> and <code>Y</code>, the <code>Z</code> for the UVW space is unneeded, so
+kept at <code>0.0</code>.</p>
+<p>For each coordinate component in turn the <code>x</code> is transformed to 0.0-1.0 space.</p>
+<p>To access the color we use the <code>GetColor</code> overload that takes a <code>ref Color4f</code>.
+This version is <em>much</em> faster than the other overload. The <code>col4f</code> we
+initialized earlier appears on both the left-hand and the right-hand side of the
+assignment operator. On the left side we have <code>ok</code> in which the <code>boolean</code>
+returned by <code>GetColor</code> is set, and the updated value of <code>col4f</code> will be right
+after the <code>ok</code>.</p>
+<p>If the color was retrieved successfully <code>ok</code> will be <code>True</code> and we can print the
+color values.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+</div>
+<div class="code">
+<pre><code>    <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(height):
+        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(width):
+            <span class="hljs-keyword">if</span> count % <span class="hljs-number">1013</span> == <span class="hljs-number">0</span>:
+                pt.X = <span class="hljs-built_in">float</span>(x) / <span class="hljs-built_in">float</span>(width) + half_pixel_u
+                pt.Y = <span class="hljs-built_in">float</span>(y) / <span class="hljs-built_in">float</span>(height) + half_pixel_v
+
+                ok, col4f = evaluator.GetColor(pt, dummy_duvw, dummy_duvw, col4f)
+
+                <span class="hljs-keyword">if</span> ok:
+                    <span class="hljs-built_in">print</span> col4f.R, col4f.G, col4f.B, col4f.A
+        count += <span class="hljs-number">1</span>
+</code></pre>
+
+</div>
+</div>
+  </body>
+</html>
