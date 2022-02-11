@@ -2,7 +2,6 @@ import System
 import Rhino.Display
 import Rhino.Render
 
-
 import scriptcontext
 import random
 

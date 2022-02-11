@@ -1,9 +1,9 @@
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="./style.css">
-	</head>
-	<body>
-	<h1>Change texture file path</h1>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+  <h1>Change texture file path</h1>
 <p><em>written by Nathan 'jesterKing' Letwory</em></p>
 <h2>Introduction</h2>
 <p>TLDR; the generated script is
@@ -39,7 +39,10 @@ can use the <code>Convert</code> mechanism. We know we need a string so we can u
 proper <code>BeginChange</code> and <code>EndChange</code> calls on the content. For <code>BeginChange</code> we
 give the <code>Program</code> change context, since we are changing the data through the
 script.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_render_content</span>(<span class="hljs-params">render_content, target</span>):
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_render_content</span>(<span class="hljs-params">render_content, target</span>):
     child = render_content.FirstChild
     <span class="hljs-keyword">while</span> child:
         handle_render_content(child, target)
@@ -51,18 +54,35 @@ script.</p>
             child.EndChange()
         child = child.NextSibling
 </code></pre>
-</div></div><h2>Iterating the render materials</h2>
+
+</div>
+</div><h2>Iterating the render materials</h2>
 <p>To iterate over all the <code>RenderMaterial</code>s available in our document we iterate over the <code>RhinoDoc</code> table called <code>RenderMaterials</code>:</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">for</span> render_material <span class="hljs-keyword">in</span> scriptcontext.doc.RenderMaterials:
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">for</span> render_material <span class="hljs-keyword">in</span> scriptcontext.doc.RenderMaterials:
     &lt;&lt;handle render content&gt;&gt;
 </code></pre>
-</div></div><h2>Handle each render material</h2>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;handle render content&gt;&gt;=</div><div class="code"><pre><code>handle_render_content(render_material, target)
+
+</div>
+</div><h2>Handle each render material</h2>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;handle render content&gt;&gt;=</div>
+<div class="code">
+<pre><code>handle_render_content(render_material, target)
 </code></pre>
-</div></div><h2>Ask the user for a target path</h2>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;=</div><div class="code"><pre><code>target = rhinoscriptsyntax.BrowseForFolder()
+
+</div>
+</div><h2>Ask the user for a target path</h2>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;=</div>
+<div class="code">
+<pre><code>target = rhinoscriptsyntax.BrowseForFolder()
 </code></pre>
-</div></div><h2>Binding it all together</h2>
+
+</div>
+</div><h2>Binding it all together</h2>
 <p>Since we need to use <code>GetParameter</code> on a <code>RenderContent</code> it is important that we
 convert the data we get to the correct data type. <code>GetParameter</code> returns an
 <code>object</code> that implements the <code>IConvertible</code> interface. We can't directly cast
@@ -70,7 +90,10 @@ from this object, instead we have to use the <code>Convert</code> mechanism. For
 import the <code>System.Convert</code>.</p>
 <p>For the folder choose dialog we import <code>rhinoscriptsyntax</code>, and to access the
 <code>RenderMaterial</code> table of the document we import <code>scriptcontext</code>.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">import</span> os
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">import</span> os
 <span class="hljs-keyword">import</span> rhinoscriptsyntax
 <span class="hljs-keyword">import</span> scriptcontext
 <span class="hljs-keyword">import</span> Rhino.Render
@@ -83,6 +106,8 @@ import the <code>System.Convert</code>.</p>
 &lt;&lt;iterate over <span class="hljs-built_in">all</span> rendermaterials&gt;&gt;
 
 </code></pre>
-</div></div>
-	</body>
+
+</div>
+</div>
+  </body>
 </html>

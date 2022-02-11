@@ -1,9 +1,9 @@
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="./style.css">
-	</head>
-	<body>
-	<h1>Creating a double-sided material</h1>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+  <h1>Creating a double-sided material</h1>
 <p><em>written by Nathan 'jesterKing' Letwory</em></p>
 <h2>Introduction</h2>
 <p>To create a double-sided material type we are going to use <code>RenderMaterial</code> from
@@ -32,12 +32,17 @@ the double-sided material.</p>
 the front and back slots we'll be using <a href="https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Render_RenderContent_Create.htm"><code>RenderContent.Create(Guid type, RenderContent parent, string childSlotName, RenderContent.ShowContentChooserFlags flags, RhinoDoc doc)</code></a>.</p>
 <h2>Create and setup the material</h2>
 <p>We'll create and assign the material only when there is an object selection.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;if objects are selected create material and assign&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-comment"># only if we have a selection do the work</span>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;if objects are selected create material and assign&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-comment"># only if we have a selection do the work</span>
 <span class="hljs-keyword">if</span> object_selection:
     &lt;&lt;create a double-sided material&gt;&gt;
     &lt;&lt;assign material to <span class="hljs-built_in">object</span> selection&gt;&gt;
 </code></pre>
-</div></div><p>To create the double-sided parent material we use <code>RenderContent.Create</code>. We
+
+</div>
+</div><p>To create the double-sided parent material we use <code>RenderContent.Create</code>. We
 don't need much else besides the render content GUID and the document.</p>
 <p>Once we have a material we need to bracket any changes we want to make between
 <code>BeginChange()</code> and <code>EndChange()</code> calls. Otherwise Rhino will ignore any
@@ -52,7 +57,10 @@ of these materials is done using the
 <a href="https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Render_RenderContent_Create.htm"><code>RenderContent.Create()</code></a>
 function that creates the material as child to a parent content using the given
 child slot name.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;create a double-sided material&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-comment"># create material</span>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;create a double-sided material&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-comment"># create material</span>
 render_material = Rhino.Render.RenderContent.Create(
     System.Guid(<span class="hljs-string">&quot;E6CD1973-B739-496E-AB69-32957FA48492&quot;</span>),
     Rhino.Render.RenderContent.ShowContentChooserFlags.<span class="hljs-literal">None</span>,
@@ -92,53 +100,80 @@ back_material.SetParameter(<span class="hljs-string">&quot;color&quot;</span>, r
 render_material.EndChange()
 
 </code></pre>
-</div></div><h2>Assign material to objects</h2>
+
+</div>
+</div><h2>Assign material to objects</h2>
 <p>Now that we have a material we can assign it to each object in our selection.
 For Rhino to notice changes to objects in the document we need to do something
 similar like the method above for changing render content that is already in the
 document. We have to <code>CommitChanges()</code> on the object for the changes to stick.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;assign material to object selection&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-comment"># assign</span>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;assign material to object selection&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-comment"># assign</span>
 <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> object_selection:
     <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Adding material&quot;</span>, render_material.Name, <span class="hljs-string">&quot;to&quot;</span>, ob)
     ob.RenderMaterial = render_material
     ob.CommitChanges()
 </code></pre>
-</div></div><h2>The imports</h2>
+
+</div>
+</div><h2>The imports</h2>
 <p>We need access to the <code>Rhino.Render</code> namespace for the material and render
 content related classes. Further we want to access the document. For that we are
 going to use <code>scriptcontext</code>. We'll import just the namespaces or modules
 meaning we'll have to include these when using classes and functionality they
 provide. We're doing that for this script to make it clear where the used bits
 and pieces come from.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">import</span> System
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">import</span> System
 <span class="hljs-keyword">import</span> Rhino.Display
 <span class="hljs-keyword">import</span> Rhino.Render
 
 </code></pre>
-</div></div><p>To create a random color we'll need the <code>random</code> module along with access to
+
+</div>
+</div><p>To create a random color we'll need the <code>random</code> module along with access to
 <code>Color4f</code> from the <code>Rhino.Display</code> namespace.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=+</div><div class="code"><pre><code><span class="hljs-keyword">import</span> scriptcontext
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=+</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">import</span> scriptcontext
 <span class="hljs-keyword">import</span> random
 
 </code></pre>
-</div></div><h2>Main structure of the script</h2>
+
+</div>
+</div><h2>Main structure of the script</h2>
 <p>The script will be implemented as a script, not a command. It will import the
 necessary modules and namespaces. It'll take note of the currently selected
 objects. Then it will create a double-sided material as we already explained.
 Finally the new material will be assigned to each of the selected objects.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;Double-Sided Material Creation Script.*&gt;&gt;=</div><div class="code"><pre><code>&lt;&lt;<span class="hljs-keyword">import</span> libraries&gt;&gt;
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;Double-Sided Material Creation Script.*&gt;&gt;=</div>
+<div class="code">
+<pre><code>&lt;&lt;<span class="hljs-keyword">import</span> libraries&gt;&gt;
 &lt;&lt;determine selected objects&gt;&gt;
 &lt;&lt;<span class="hljs-keyword">if</span> objects are selected create material <span class="hljs-keyword">and</span> assign&gt;&gt;
 </code></pre>
-</div></div><h2>Retrieve object selection</h2>
+
+</div>
+</div><h2>Retrieve object selection</h2>
 <p>We're not going to ask the user to select anything. Instead the script relies on
 the selection already being made. We still create a material, but without a
 selection no assignment will be made.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;determine selected objects&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-comment"># get object selection</span>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;determine selected objects&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-comment"># get object selection</span>
 object_selection = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> scriptcontext.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]
 
 </code></pre>
-</div></div><h2>Conclusion</h2>
+
+</div>
+</div><h2>Conclusion</h2>
 <p>It is relatively straightforward to programmatically create new render content
 in Rhino. There are a few mechanisms the programmer needs to be mindful of:
 bracketing of changes to render content, and explicitely committing changes made
@@ -153,5 +188,5 @@ has been achieved: show how to create and assign a new material of a specific
 type.</p>
 <p>The generated script is in the repository <a href="https://github.com/jesterKing/rhipy/blob/master/create_doublesided_rendermaterial.py">here</a></p>
 
-	</body>
+  </body>
 </html>

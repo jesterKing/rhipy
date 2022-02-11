@@ -1,9 +1,9 @@
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="./style.css">
-	</head>
-	<body>
-	<h1>Inspecting a RenderMaterial and its parameters</h1>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+  <h1>Inspecting a RenderMaterial and its parameters</h1>
 <p><em>written by Nathan 'jesterKing' Letwory</em></p>
 <p>The <code>RenderMaterial</code> is the class that represents materials in Rhino. The same
 class is used for all different materials that are provided by Rhino, and even
@@ -14,7 +14,10 @@ methods <code>GetParameter</code> and <code>SetParameter</code>. And therein als
 <p>To be able to successfully access the parameters you need to know the names of
 these parameters. But by itself there is no obvious way how to find the names
 out. And each material type will have its own set of parameters.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;inpect render material parameters.*&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">import</span> scriptcontext <span class="hljs-keyword">as</span> sc
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;inpect render material parameters.*&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">import</span> scriptcontext <span class="hljs-keyword">as</span> sc
 <span class="hljs-keyword">import</span> clr
 
 clr.AddReference(<span class="hljs-string">&#x27;System.Xml&#x27;</span>)
@@ -24,21 +27,28 @@ rms = <span class="hljs-built_in">list</span>(sc.doc.RenderMaterials)
 
 &lt;&lt;loop over each rm <span class="hljs-keyword">and</span> inspect&gt;&gt;
 </code></pre>
-</div></div><p>For each material we are going to access the <code>Xml</code> property. This property
+
+</div>
+</div><p>For each material we are going to access the <code>Xml</code> property. This property
 provides a description of the material in question in XML-form. In this XML
 document we are going to look for the <code>&lt;parameters&gt;</code> tag. This is essentially
 where all the parameters of a material are expressed.</p>
 <p>On each iteration of the loop we are going to create an XML document and load
 the XML provided by the <code>RenderMaterial</code> into that document. Then we can look
 for the <code>parameters</code> tag.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;loop over each rm and inspect&gt;&gt;=</div><div class="code"><pre><code><span class="hljs-keyword">for</span> rm <span class="hljs-keyword">in</span> rms:
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;loop over each rm and inspect&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">for</span> rm <span class="hljs-keyword">in</span> rms:
     <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;material:&#x27;</span>, rm.Name)
     rmdoc = xml.XmlDocument()
     rmdoc.LoadXml(rm.Xml)
     params = rmdoc.DocumentElement.SelectSingleNode(<span class="hljs-string">&#x27;parameters&#x27;</span>)
     &lt;&lt;loop over <span class="hljs-built_in">all</span> parameters <span class="hljs-keyword">and</span> <span class="hljs-built_in">print</span>&gt;&gt;
 </code></pre>
-</div></div><p>Now that we have this node <code>&lt;parameters&gt;</code> we can iterate over its children, and
+
+</div>
+</div><p>Now that we have this node <code>&lt;parameters&gt;</code> we can iterate over its children, and
 show the information we have learned. The name of each child node is the name of
 the parameter we need for proper usage of the <code>GetParameter</code> and <code>SetParameter</code>
 methods.</p>
@@ -46,7 +56,10 @@ methods.</p>
 for its next sibling until we got none.</p>
 <p>To understand what data type each parameter is we ask for the <code>type</code> attribute.
 This tells us whether a parameter is a boolean, or a string, and so on.</p>
-<div class="codefragment"><div class="fragmentname">&lt;&lt;loop over all parameters and print&gt;&gt;=</div><div class="code"><pre><code>param = params.FirstChild
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;loop over all parameters and print&gt;&gt;=</div>
+<div class="code">
+<pre><code>param = params.FirstChild
 <span class="hljs-keyword">while</span> param:
     param_type = param.GetAttributeNode(<span class="hljs-string">&#x27;type&#x27;</span>)
     <span class="hljs-keyword">try</span>:
@@ -57,7 +70,9 @@ This tells us whether a parameter is a boolean, or a string, and so on.</p>
     <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;parameter&#x27;</span>, param.Name, <span class="hljs-string">&#x27;is a&#x27;</span>, param_type, <span class="hljs-string">&#x27;with value&#x27;</span>, param.InnerXml)
     param = param.NextSibling
 </code></pre>
-</div></div><p>The generated script is in the repository <a href="https://github.com/jesterKing/rhipy/blob/master/inspect_rendermaterial_parameters.py">here</a></p>
 
-	</body>
+</div>
+</div><p>The generated script is in the repository <a href="https://github.com/jesterKing/rhipy/blob/master/inspect_rendermaterial_parameters.py">here</a></p>
+
+  </body>
 </html>
