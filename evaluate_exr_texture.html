@@ -59,6 +59,13 @@ render_texture.EndChange()
 
 </div>
 </div><h2>Getting the evaluator</h2>
+<p>It is important to disable any transformations applied to a render texture. In
+our case it isn't really necessary, but if you were to access render textures
+users had manually added to the Rhino document you can't be too careful. Disable
+local mapping, adjustments and projection changes to ensure you get the original
+image sampling, and not some unexpected version due to all applied changes.</p>
+<p>The enumeration <code>TextureEvaluatorFlags</code> for that is really a bit flag, so you
+can bitwise <code>OR</code> them together.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;get the evaluator from the texture&gt;&gt;=</div>
 <div class="code">

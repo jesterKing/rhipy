@@ -55,6 +55,15 @@ render_texture.EndChange()
 
 ## Getting the evaluator
 
+It is important to disable any transformations applied to a render texture. In
+our case it isn't really necessary, but if you were to access render textures
+users had manually added to the Rhino document you can't be too careful. Disable
+local mapping, adjustments and projection changes to ensure you get the original
+image sampling, and not some unexpected version due to all applied changes.
+
+The enumeration `TextureEvaluatorFlags` for that is really a bit flag, so you
+can bitwise `OR` them together.
+
 ```  py  : <<get the evaluator from the texture>>=
 evaluator = render_texture.CreateEvaluator(Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange)
 ```
