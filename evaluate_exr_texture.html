@@ -69,7 +69,11 @@ can bitwise <code>OR</code> them together.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;get the evaluator from the texture&gt;&gt;=</div>
 <div class="code">
-<pre><code>evaluator = render_texture.CreateEvaluator(Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange)
+<pre><code>evaluator = render_texture.CreateEvaluator(
+    Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping
+    | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment
+    | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange
+)
 </code></pre>
 
 </div>

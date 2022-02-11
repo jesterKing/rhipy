@@ -65,7 +65,11 @@ The enumeration `TextureEvaluatorFlags` for that is really a bit flag, so you
 can bitwise `OR` them together.
 
 ```  py  : <<get the evaluator from the texture>>=
-evaluator = render_texture.CreateEvaluator(Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange)
+evaluator = render_texture.CreateEvaluator(
+    Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping
+    | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment
+    | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange
+)
 ```
 
 ## Looping over texture UV space

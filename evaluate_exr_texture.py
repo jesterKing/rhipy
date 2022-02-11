@@ -10,7 +10,11 @@ if file_dialog.ShowDialog():
     render_texture.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
     render_texture.SetParameter("filename", file_dialog.FileName)
     render_texture.EndChange()
-    evaluator = render_texture.CreateEvaluator(Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange)
+    evaluator = render_texture.CreateEvaluator(
+        Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping
+        | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableAdjustment
+        | Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableProjectionChange
+    )
     size = render_texture.PixelSize2
     if size:
         width = size[0]
@@ -26,7 +30,6 @@ if file_dialog.ShowDialog():
                 if count % 1013 == 0:
                     pt.X = float(x) / float(width) + half_pixel_u
                     pt.Y = float(y) / float(height) + half_pixel_v
-                    pt.Z = 0.0
     
                     ok, col4f = evaluator.GetColor(pt, dummy_duvw, dummy_duvw, col4f)
     
