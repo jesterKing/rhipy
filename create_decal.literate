@@ -1,0 +1,83 @@
+# Creating a decal with RhinoCommon
+
+Creating a decal in Rhino needs a `RenderTexture` instance for its texture. In
+this script we will create a `RenderTexture` from scratch, but using a
+`RenderTexture` instance that is already in the document should work equally
+well.
+
+At the moment of writing this **literate** script the `RhinoCommon` API offers
+only means to create and delete decals, but not to modify existing ones. For
+that reason this script only shows how to create a new decal.
+
+The final generated script is
+[create_decal.py](https://github.com/jesterKing/rhipy/blob/master/create_decal.py)
+in case you want to go directly ahead and look at just the code. This document
+otherwise will explain all necessary steps in as much detail as possible.
+
+``` py : <<create a decal.*>>= ./create_decal.py
+import Rhino
+import scriptcontext as sc
+
+<<create texture for decal>>
+<<set up decal parameters>>
+<<create the decal>>
+<<get decals list for selected object>>
+
+sc.doc.Views.Redraw()
+```
+
+## Creating the bitmap texture
+
+We'll be using one of the [`Create`](https://developer.rhino3d.com/api/RhinoCommon/html/Overload_Rhino_Render_RenderContent_Create.htm) overloads to add a new bitmap texture to the current document. Since we want to create a bitmap texture we will be using the [`ContentUuids.BitmapTextureType`](https://developer.rhino3d.com/api/RhinoCommon/html/P_Rhino_Render_ContentUuids_BitmapTextureType.htm) to pass into the correct `Create` method overload.
+
+For this script specifically We'll be using the [`Create(RhinoDoc,
+Guid)`](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Render_RenderContent_Create.htm)
+version. This overload will pop-up a file dialog for us to pick an image file to
+use for our `RenderTexture` instance. This removes for us the need to write code
+to pick a file and modify the `RenderTexture` instance manually. Our texture
+will be created automatically with the mapping channel for it set to 1 as is
+necessary for a texture to be used as a decal.
+
+``` py : <<create texture for decal>>=
+render_texture = Rhino.Render.RenderContent.Create(sc.doc, Rhino.Render.ContentUuids.BitmapTextureType)
+```
+
+## Setting up the decal parameters
+
+For this simple script we're going to create the decal with planar mapping with
+its origin set to `0, 0, 0` and 5 units along the world X and Y axes. Projection
+will be on both sides of surfaces.
+
+``` py : <<set up decal parameters>>=
+decal_params = Rhino.Render.DecalCreateParams()
+decal_params.TextureInstanceId = render_texture.Id
+decal_params.DecalMapping = Rhino.Render.DecalMapping.Planar
+decal_params.DecalProjection = Rhino.Render.DecalProjection.Both
+decal_params.Origin = Rhino.Geometry.Point3d(0, 0, 0)
+decal_params.VectorAcross = Rhino.Geometry.Vector3d(5, 0, 0)
+decal_params.VectorUp = Rhino.Geometry.Vector3d(0, 5, 0)
+```
+
+An improvement to this script of course would be to query the user for the
+location and orientation of the decal, but that is left to the reader as
+excercise.
+
+## Creating and assignig the decal
+
+Now we can create a new decal using the parameters we just set up.
+
+``` py : <<create the decal>>=
+decal = Rhino.Render.Decal.Create(decal_params)
+```
+
+Next get the first selected object and add the newly created decal to it.
+
+``` py : <<get decals list for selected object>>=
+obs = [ob for ob in sc.doc.Objects if ob.IsSelected(False)]
+if len(obs)>0:
+    ob = obs[0]
+    ob.Attributes.Decals.Add(decal)
+    ob.CommitChanges()
+```
+
+This is all that is needed to create a new decal for an object.

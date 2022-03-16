@@ -18,3 +18,4 @@ article on [Literate Programming](https://en.wikipedia.org/wiki/Literate_program
 * [Change texture filepath](change_texture_filepath.html)
 * [Inspect RenderMaterial Parameters by code](inspect_rendermaterial_parameters.html)
 * [Using RDK to evaluate an EXR file](evaluate_exr_texture.html)
+* [Creating a decal](create_decal.html)

@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+  <h1>Creating a decal with RhinoCommon</h1>
+<p>Creating a decal in Rhino needs a <code>RenderTexture</code> instance for its texture. In
+this script we will create a <code>RenderTexture</code> from scratch, but using a
+<code>RenderTexture</code> instance that is already in the document should work equally
+well.</p>
+<p>At the moment of writing this <strong>literate</strong> script the <code>RhinoCommon</code> API offers
+only means to create and delete decals, but not to modify existing ones. For
+that reason this script only shows how to create a new decal.</p>
+<p>The final generated script is
+<a href="https://github.com/jesterKing/rhipy/blob/master/create_decal.py">create_decal.py</a>
+in case you want to go directly ahead and look at just the code. This document
+otherwise will explain all necessary steps in as much detail as possible.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;create a decal.*&gt;&gt;=</div>
+<div class="code">
+<pre><code><span class="hljs-keyword">import</span> Rhino
+<span class="hljs-keyword">import</span> scriptcontext <span class="hljs-keyword">as</span> sc
+
+&lt;&lt;create texture <span class="hljs-keyword">for</span> decal&gt;&gt;
+&lt;&lt;<span class="hljs-built_in">set</span> up decal parameters&gt;&gt;
+&lt;&lt;create the decal&gt;&gt;
+&lt;&lt;get decals <span class="hljs-built_in">list</span> <span class="hljs-keyword">for</span> selected <span class="hljs-built_in">object</span>&gt;&gt;
+
+sc.doc.Views.Redraw()
+</code></pre>
+
+</div>
+</div><h2>Creating the bitmap texture</h2>
+<p>We'll be using one of the <a href="https://developer.rhino3d.com/api/RhinoCommon/html/Overload_Rhino_Render_RenderContent_Create.htm"><code>Create</code></a> overloads to add a new bitmap texture to the current document. Since we want to create a bitmap texture we will be using the <a href="https://developer.rhino3d.com/api/RhinoCommon/html/P_Rhino_Render_ContentUuids_BitmapTextureType.htm"><code>ContentUuids.BitmapTextureType</code></a> to pass into the correct <code>Create</code> method overload.</p>
+<p>For this script specifically We'll be using the <a href="https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Render_RenderContent_Create.htm"><code>Create(RhinoDoc, Guid)</code></a>
+version. This overload will pop-up a file dialog for us to pick an image file to
+use for our <code>RenderTexture</code> instance. This removes for us the need to write code
+to pick a file and modify the <code>RenderTexture</code> instance manually. Our texture
+will be created automatically with the mapping channel for it set to 1 as is
+necessary for a texture to be used as a decal.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;create texture for decal&gt;&gt;=</div>
+<div class="code">
+<pre><code>render_texture = Rhino.Render.RenderContent.Create(sc.doc, Rhino.Render.ContentUuids.BitmapTextureType)
+</code></pre>
+
+</div>
+</div><h2>Setting up the decal parameters</h2>
+<p>For this simple script we're going to create the decal with planar mapping with
+its origin set to <code>0, 0, 0</code> and 5 units along the world X and Y axes. Projection
+will be on both sides of surfaces.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;set up decal parameters&gt;&gt;=</div>
+<div class="code">
+<pre><code>decal_params = Rhino.Render.DecalCreateParams()
+decal_params.TextureInstanceId = render_texture.Id
+decal_params.DecalMapping = Rhino.Render.DecalMapping.Planar
+decal_params.DecalProjection = Rhino.Render.DecalProjection.Both
+decal_params.Origin = Rhino.Geometry.Point3d(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>)
+decal_params.VectorAcross = Rhino.Geometry.Vector3d(<span class="hljs-number">5</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>)
+decal_params.VectorUp = Rhino.Geometry.Vector3d(<span class="hljs-number">0</span>, <span class="hljs-number">5</span>, <span class="hljs-number">0</span>)
+</code></pre>
+
+</div>
+</div><p>An improvement to this script of course would be to query the user for the
+location and orientation of the decal, but that is left to the reader as
+excercise.</p>
+<h2>Creating and assignig the decal</h2>
+<p>Now we can create a new decal using the parameters we just set up.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;create the decal&gt;&gt;=</div>
+<div class="code">
+<pre><code>decal = Rhino.Render.Decal.Create(decal_params)
+</code></pre>
+
+</div>
+</div><p>Next get the first selected object and add the newly created decal to it.</p>
+<div class="codefragment">
+<div class="fragmentname">&lt;&lt;get decals list for selected object&gt;&gt;=</div>
+<div class="code">
+<pre><code>obs = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> sc.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(obs)&gt;<span class="hljs-number">0</span>:
+    ob = obs[<span class="hljs-number">0</span>]
+    ob.Attributes.Decals.Add(decal)
+    ob.CommitChanges()
+</code></pre>
+
+</div>
+</div><p>This is all that is needed to create a new decal for an object.</p>
+
+  </body>
+</html>
