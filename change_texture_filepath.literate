@@ -100,9 +100,9 @@ import Rhino.Render
 import System.Convert
 
 <<method to handle render content>>
-
 <<ask for target path>>
-
 <<iterate over all rendermaterials>>
 
 ```
+
+And that's that.
