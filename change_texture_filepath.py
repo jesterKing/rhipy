@@ -15,9 +15,7 @@ def handle_render_content(render_content, target):
             child.SetParameter("filename", target + os.sep + source_file)
             child.EndChange()
         child = child.NextSibling
-
 target = rhinoscriptsyntax.BrowseForFolder()
-
 for render_material in scriptcontext.doc.RenderMaterials:
     handle_render_content(render_material, target)
 
