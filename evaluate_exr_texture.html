@@ -17,7 +17,7 @@ textures based on images. For that we <code>&lt;&lt;get the evaluator from the t
 In this example we'll do every 1013th pixel of the input image. This is to
 ensure we get varying values in case of an input image with a regular pattern.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;evaluating an EXR texture.*&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;evaluating an EXR texture.*&gt;&gt;= ./evaluate_exr_texture.py $</div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> Rhino
 
@@ -36,7 +36,7 @@ file_dialog.Filter = <span class="hljs-string">&quot;EXR (*.exr)|*.exr&quot;</sp
 document, nor should it be visible in the UI. For that we use
 <code>RenderContentType.NewContentFromTypeId</code>.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create the HDR render texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create the HDR render texture&gt;&gt;= </div>
 <div class="code">
 <pre><code>render_texture = Rhino.Render.RenderContentType.NewContentFromTypeId(
     Rhino.Render.ContentUuids.HDRTextureType
@@ -50,7 +50,7 @@ to bracket the <code>SetParameter</code> call correctly. Since we are doing all 
 programmatically the correct context is <code>ChangeContexts.Program</code>. Without the
 bracketing changes made to the <code>render_texture</code> will not be picked up.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create the HDR render texture&gt;&gt;=+</div>
+<div class="fragmentname">&lt;&lt;create the HDR render texture&gt;&gt;=+ </div>
 <div class="code">
 <pre><code>render_texture.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
 render_texture.SetParameter(<span class="hljs-string">&quot;filename&quot;</span>, file_dialog.FileName)
@@ -67,7 +67,7 @@ image sampling, and not some unexpected version due to all applied changes.</p>
 <p>The enumeration <code>TextureEvaluatorFlags</code> for that is really a bit flag, so you
 can bitwise <code>OR</code> them together.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;get the evaluator from the texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;get the evaluator from the texture&gt;&gt;= </div>
 <div class="code">
 <pre><code>evaluator = render_texture.CreateEvaluator(
     Rhino.Render.RenderTexture.TextureEvaluatorFlags.DisableLocalMapping
@@ -81,7 +81,7 @@ can bitwise <code>OR</code> them together.</p>
 <p>The texture size is retrieved by using <code>PixelSize2</code>. Since it returns a Nullable
 type check we have actually something.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;= </div>
 <div class="code">
 <pre><code>size = render_texture.PixelSize2
 <span class="hljs-keyword">if</span> size:
@@ -92,7 +92,7 @@ type check we have actually something.</p>
 </div>
 </div><p>Correct access vector needs half pixel values. They are calculated by dividing <code>0.5</code> by the width and height of the texture respectively.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+</div>
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+ </div>
 <div class="code">
 <pre><code>    half_pixel_u = <span class="hljs-number">0.5</span> / width
     half_pixel_v = <span class="hljs-number">0.5</span> / height
@@ -105,7 +105,7 @@ the rest of the variables we'll be using in the double loop.</p>
 <p>Since we are evaluating an image-based render texture we don't need
 differentials, so we set up a <code>dummy_duvw</code> set to <code>(0.0, 0.0, 0.0)</code>.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+</div>
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+ </div>
 <div class="code">
 <pre><code>    col4f = Rhino.Display.Color4f()
     pt = Rhino.Geometry.Point3d.Origin
@@ -128,7 +128,7 @@ after the <code>ok</code>.</p>
 <p>If the color was retrieved successfully <code>ok</code> will be <code>True</code> and we can print the
 color values.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+</div>
+<div class="fragmentname">&lt;&lt;double loop over evaluator to get values&gt;&gt;=+ </div>
 <div class="code">
 <pre><code>    <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(height):
         <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(width):

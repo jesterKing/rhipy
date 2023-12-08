@@ -14,7 +14,7 @@ The final generated script is
 in case you want to go directly ahead and look at just the code. This document
 otherwise will explain all necessary steps in as much detail as possible.
 
-``` py : <<create a decal.*>>= ./create_decal.py
+``` py : <<create a decal.*>>= ./create_decal.py  $
 import Rhino
 import scriptcontext as sc
 

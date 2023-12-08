@@ -21,3 +21,4 @@ for ob in obs:
     diffuse_texture.BeginChange(context)
     diffuse_texture.SetRepeat(repeat, context)
     diffuse_texture.EndChange()
+

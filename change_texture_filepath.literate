@@ -92,7 +92,8 @@ import the `System.Convert`.
 For the folder choose dialog we import `rhinoscriptsyntax`, and to access the
 `RenderMaterial` table of the document we import `scriptcontext`.
 
-```py : <<change texture filepath.*>>= ./change_texture_filepath.py
+
+```py : <<change texture filepath.*>>= ./change_texture_filepath.py $
 import os
 import rhinoscriptsyntax
 import scriptcontext

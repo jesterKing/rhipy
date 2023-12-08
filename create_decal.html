@@ -16,7 +16,7 @@ that reason this script only shows how to create a new decal.</p>
 in case you want to go directly ahead and look at just the code. This document
 otherwise will explain all necessary steps in as much detail as possible.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create a decal.*&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create a decal.*&gt;&gt;= ./create_decal.py  $</div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> Rhino
 <span class="hljs-keyword">import</span> scriptcontext <span class="hljs-keyword">as</span> sc
@@ -39,7 +39,7 @@ to pick a file and modify the <code>RenderTexture</code> instance manually. Our 
 will be created automatically with the mapping channel for it set to 1 as is
 necessary for a texture to be used as a decal.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create texture for decal&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create texture for decal&gt;&gt;= </div>
 <div class="code">
 <pre><code>render_texture = Rhino.Render.RenderContent.Create(sc.doc, Rhino.Render.ContentUuids.BitmapTextureType)
 </code></pre>
@@ -50,7 +50,7 @@ necessary for a texture to be used as a decal.</p>
 its origin set to <code>0, 0, 0</code> and 5 units along the world X and Y axes. Projection
 will be on both sides of surfaces.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;set up decal parameters&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;set up decal parameters&gt;&gt;= </div>
 <div class="code">
 <pre><code>decal_params = Rhino.Render.DecalCreateParams()
 decal_params.TextureInstanceId = render_texture.Id
@@ -68,7 +68,7 @@ excercise.</p>
 <h2>Creating and assignig the decal</h2>
 <p>Now we can create a new decal using the parameters we just set up.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create the decal&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create the decal&gt;&gt;= </div>
 <div class="code">
 <pre><code>decal = Rhino.Render.Decal.Create(decal_params)
 </code></pre>
@@ -76,7 +76,7 @@ excercise.</p>
 </div>
 </div><p>Next get the first selected object and add the newly created decal to it.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;get decals list for selected object&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;get decals list for selected object&gt;&gt;= </div>
 <div class="code">
 <pre><code>obs = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> sc.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]
 <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(obs)&gt;<span class="hljs-number">0</span>:

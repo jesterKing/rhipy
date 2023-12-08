@@ -33,7 +33,7 @@ the front and back slots we'll be using <a href="https://developer.rhino3d.com/a
 <h2>Create and setup the material</h2>
 <p>We'll create and assign the material only when there is an object selection.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;if objects are selected create material and assign&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;if objects are selected create material and assign&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># only if we have a selection do the work</span>
 <span class="hljs-keyword">if</span> object_selection:
@@ -58,7 +58,7 @@ of these materials is done using the
 function that creates the material as child to a parent content using the given
 child slot name.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create a double-sided material&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create a double-sided material&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># create material</span>
 render_material = Rhino.Render.RenderContent.Create(
@@ -108,7 +108,7 @@ For Rhino to notice changes to objects in the document we need to do something
 similar like the method above for changing render content that is already in the
 document. We have to <code>CommitChanges()</code> on the object for the changes to stick.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;assign material to object selection&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;assign material to object selection&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># assign</span>
 <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> object_selection:
@@ -126,7 +126,7 @@ meaning we'll have to include these when using classes and functionality they
 provide. We're doing that for this script to make it clear where the used bits
 and pieces come from.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;import libraries&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> System
 <span class="hljs-keyword">import</span> Rhino.Display
@@ -138,7 +138,7 @@ and pieces come from.</p>
 </div><p>To create a random color we'll need the <code>random</code> module along with access to
 <code>Color4f</code> from the <code>Rhino.Display</code> namespace.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=+</div>
+<div class="fragmentname">&lt;&lt;import libraries&gt;&gt;=+ </div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> scriptcontext
 <span class="hljs-keyword">import</span> random
@@ -152,7 +152,7 @@ necessary modules and namespaces. It'll take note of the currently selected
 objects. Then it will create a double-sided material as we already explained.
 Finally the new material will be assigned to each of the selected objects.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;Double-Sided Material Creation Script.*&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;Double-Sided Material Creation Script.*&gt;&gt;= ./create_doublesided_rendermaterial.py $</div>
 <div class="code">
 <pre><code><span class="literate-tag-name">&lt;&lt;import libraries&gt;&gt;</span>
 <span class="literate-tag-name">&lt;&lt;determine selected objects&gt;&gt;</span>
@@ -165,7 +165,7 @@ Finally the new material will be assigned to each of the selected objects.</p>
 the selection already being made. We still create a material, but without a
 selection no assignment will be made.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;determine selected objects&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;determine selected objects&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># get object selection</span>
 object_selection = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> scriptcontext.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]

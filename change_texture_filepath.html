@@ -40,7 +40,7 @@ proper <code>BeginChange</code> and <code>EndChange</code> calls on the content.
 give the <code>Program</code> change context, since we are changing the data through the
 script.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;method to handle render content&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_render_content</span>(<span class="hljs-params">render_content, target</span>):
     child = render_content.FirstChild
@@ -59,7 +59,7 @@ script.</p>
 </div><h2>Iterating the render materials</h2>
 <p>To iterate over all the <code>RenderMaterial</code>s available in our document we iterate over the <code>RhinoDoc</code> table called <code>RenderMaterials</code>:</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;iterate over all rendermaterials&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-keyword">for</span> render_material <span class="hljs-keyword">in</span> scriptcontext.doc.RenderMaterials:
     <span class="literate-tag-name">&lt;&lt;handle render content&gt;&gt;</span>
@@ -68,7 +68,7 @@ script.</p>
 </div>
 </div><h2>Handle each render material</h2>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;handle render content&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;handle render content&gt;&gt;= </div>
 <div class="code">
 <pre><code>handle_render_content(render_material, target)
 </code></pre>
@@ -76,7 +76,7 @@ script.</p>
 </div>
 </div><h2>Ask the user for a target path</h2>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;ask for target path&gt;&gt;= </div>
 <div class="code">
 <pre><code>target = rhinoscriptsyntax.BrowseForFolder()
 </code></pre>
@@ -91,7 +91,7 @@ import the <code>System.Convert</code>.</p>
 <p>For the folder choose dialog we import <code>rhinoscriptsyntax</code>, and to access the
 <code>RenderMaterial</code> table of the document we import <code>scriptcontext</code>.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;change texture filepath.*&gt;&gt;= ./change_texture_filepath.py $</div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> os
 <span class="hljs-keyword">import</span> rhinoscriptsyntax

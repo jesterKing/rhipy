@@ -159,7 +159,7 @@ necessary modules and namespaces. It'll take note of the currently selected
 objects. Then it will create a double-sided material as we already explained.
 Finally the new material will be assigned to each of the selected objects.
 
-```py : <<Double-Sided Material Creation Script.*>>= ./create_doublesided_rendermaterial.py
+```py : <<Double-Sided Material Creation Script.*>>= ./create_doublesided_rendermaterial.py $
 <<import libraries>>
 <<determine selected objects>>
 <<if objects are selected create material and assign>>

@@ -17,7 +17,7 @@ With the evaluator in hand we can do a `<<double loop over evaluator to get valu
 In this example we'll do every 1013th pixel of the input image. This is to
 ensure we get varying values in case of an input image with a regular pattern.
 
-``` py : <<evaluating an EXR texture.*>>= ./evaluate_exr_texture.py
+``` py : <<evaluating an EXR texture.*>>= ./evaluate_exr_texture.py $
 import Rhino
 
 file_dialog = Rhino.UI.OpenFileDialog()

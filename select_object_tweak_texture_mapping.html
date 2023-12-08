@@ -7,15 +7,17 @@
 <p>This is a simple and straight-forward script. We import a bunch of modules and
 namespaces we need, get the list of selected objects, loop over them and tweak
 the diffuse or base color textures.</p>
-<p>In case you rather just get the final script, you can find it <a href="https://github.com/jesterKing/rhipy/blob/master/select_object_tweak_texture_mapping.py">here</a></p>
+<p>In case you rather just get the final script, you can find it
+<a href="https://github.com/jesterKing/rhipy/blob/master/select_object_tweak_texture_mapping.py">here</a></p>
 <p>We'll assume for now that we are dealing with Rhino Custom or Rhino PBR
 materials.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;the script.*&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;the script.*&gt;&gt;= ./select_object_tweak_texture_mapping.py $</div>
 <div class="code">
 <pre><code><span class="literate-tag-name">&lt;&lt;imports&gt;&gt;</span>
 <span class="literate-tag-name">&lt;&lt;assume already selected objects&gt;&gt;</span>
 <span class="literate-tag-name">&lt;&lt;loop over objects and tweak texture&gt;&gt;</span>
+
 </code></pre>
 
 </div>
@@ -24,7 +26,7 @@ materials.</p>
 we're passing <code>False</code> to <code>IsSelected()</code>, since we are not interested in
 sub-objects, but rather the top level object.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;assume already selected objects&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;assume already selected objects&gt;&gt;= </div>
 <div class="code">
 <pre><code>obs = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> sc.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]
 </code></pre>
@@ -35,7 +37,7 @@ sub-objects, but rather the top level object.</p>
 material. For the material we'll determine the correct child slot, retrieve the
 texture, then change the repeat of its mapping.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;loop over objects and tweak texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;loop over objects and tweak texture&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> obs:
     <span class="literate-tag-name">&lt;&lt;get render material&gt;&gt;</span>
@@ -48,7 +50,7 @@ texture, then change the repeat of its mapping.</p>
 </div><p>Simple ask for <code>RenderMaterial</code>. This should always work, but just in case, skip
 handling this any further if <code>None</code> was given.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;get render material&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;get render material&gt;&gt;= </div>
 <div class="code">
 <pre><code>render_material = ob.RenderMaterial
 <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> render_material:
@@ -59,7 +61,7 @@ handling this any further if <code>None</code> was given.</p>
 </div><p>For now we assume either Rhino native materials (basic material or PBR). To that
 end we'll simulate the render material and see if it is a PBR material.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;get child slot&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;get child slot&gt;&gt;= </div>
 <div class="code">
 <pre><code>mat = render_material.SimulatedMaterial(Rhino.Render.RenderTexture.TextureGeneration.Allow)
 <span class="hljs-keyword">if</span> mat.IsPhysicallyBased <span class="hljs-keyword">and</span> mat.PhysicallyBased:
@@ -72,7 +74,7 @@ end we'll simulate the render material and see if it is a PBR material.</p>
 </div><p>Now that we have the correct slot we can actually get the texture from our
 render material.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;find texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;find texture&gt;&gt;= </div>
 <div class="code">
 <pre><code>diffuse_texture = render_material.GetTextureFromUsage(slot)
 </code></pre>
@@ -83,7 +85,7 @@ content to be properly updated we have to bracket it with BeginChange and
 EndChange, using a suitable change context. Since our script is like a UI we'll
 use the UI change context. Program or RealTimeUI would also work.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;fiddle with texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;fiddle with texture&gt;&gt;= </div>
 <div class="code">
 <pre><code>context = Rhino.Render.RenderContent.ChangeContexts.UI
 repeat = diffuse_texture.GetRepeat()
@@ -100,7 +102,7 @@ diffuse_texture.EndChange()
 </div><h2>Missing bits and pieces</h2>
 <p>We still have to import everything we need:</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;imports&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;imports&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> scriptcontext <span class="hljs-keyword">as</span> sc
 <span class="hljs-keyword">import</span> Rhino

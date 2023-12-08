@@ -13,7 +13,7 @@ class in the <code>Rhino.Render</code> namespace.</p>
 <p>We want to create a bitmap texture and a physically based material. We'll take
 the GUIDs for these in several variables.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;used guids&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;used guids&gt;&gt;= </div>
 <div class="code">
 <pre><code>bitmap_texture_type_guid = rr.ContentUuids.BitmapTextureType
 pbr_material_type_guid = rr.ContentUuids.PhysicallyBasedMaterialType
@@ -24,7 +24,7 @@ pbr_material_type_guid = rr.ContentUuids.PhysicallyBasedMaterialType
 <code>bitmap_texture_type_guid</code>. And since we are creating a bitmap texture in
 <code>bmtex</code> we'll set its <code>Filename</code> property to the path of a file we have on disk.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create bitmap texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create bitmap texture&gt;&gt;= </div>
 <div class="code">
 <pre><code>bmtex = rr.RenderContentType.NewContentFromTypeId(bitmap_texture_type_guid)
 bmtex.Filename = <span class="hljs-string">&quot;C:\\Users\\Nathan\\Pictures\\uvtester.png&quot;</span>
@@ -48,7 +48,7 @@ material <code>sim</code>, and from that query the <code>PhysicallyBasedMaterial
 <p>This gives us the <code>Rhino.DocObjects.PhysicallyBasedMaterial</code> that has the API for
 accessing the PBR properties and setting the textures.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create pbr material and jump through hoops&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create pbr material and jump through hoops&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># first create an empty PBR material</span>
 pbr_rm = rr.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
@@ -72,7 +72,7 @@ matter much, because we also set the texture.</p>
 the <code>Texture()</code> method on the <code>SimulatedTexture</code> <code>simtex</code>. The Texture we set to
 the <code>PBR_BaseColor</code> slot, which we find through <code>Rhino.DocObjects.TextureType</code>.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;set PBR properties and texture&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;set PBR properties and texture&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># now we have an instance of a type that has all the API you need to set the PBR</span>
 <span class="hljs-comment"># properties. For simple glass we set color to white, opacity to 0 and opacity</span>
@@ -99,7 +99,7 @@ we have provides us with a <code>Material</code> property that gives us that
 <p>Now we can also set a name, and finally add it to the document <code>RenderMaterials</code>
 table.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;convert into render material&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;convert into render material&gt;&gt;= </div>
 <div class="code">
 <pre><code><span class="hljs-comment"># convert it back to RenderMaterial</span>
 new_pbr = rr.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
@@ -114,7 +114,7 @@ sc.doc.RenderMaterials.Add(new_pbr)
 </div><p>In the end we have the entire script that creates us a PBR material with a
 texture in the base color slot.</p>
 <div class="codefragment">
-<div class="fragmentname">&lt;&lt;create pbr with textures.*&gt;&gt;=</div>
+<div class="fragmentname">&lt;&lt;create pbr with textures.*&gt;&gt;= ./create_pbr_material_with_textures.py $</div>
 <div class="code">
 <pre><code><span class="hljs-keyword">import</span> Rhino <span class="hljs-keyword">as</span> rh
 <span class="hljs-keyword">import</span> Rhino.Render <span class="hljs-keyword">as</span> rr
