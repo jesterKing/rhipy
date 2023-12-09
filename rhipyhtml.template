@@ -1,0 +1,11 @@
+<html>
+<head>
+  <meta property="og:description" content="A literate program in the rhipy repository." />
+  <meta name="description" content="A literate program in the rhipy repository." />
+  [AUTHORS]
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+[CONTENT]
+</body>
+</html>`

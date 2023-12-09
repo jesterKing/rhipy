@@ -19,3 +19,8 @@ article on [Literate Programming](https://en.wikipedia.org/wiki/Literate_program
 * [Inspect RenderMaterial Parameters by code](inspect_rendermaterial_parameters.html)
 * [Using RDK to evaluate an EXR file](evaluate_exr_texture.html)
 * [Creating a decal](create_decal.html)
+
+```SETTINGS
+template=rhipyhtml.template
+authors=Nathan 'jesterKing' Letwory
+```
