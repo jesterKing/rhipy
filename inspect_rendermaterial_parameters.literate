@@ -15,7 +15,7 @@ these parameters. But by itself there is no obvious way how to find the names
 out. And each material type will have its own set of parameters.
 
 
-``` py : <<inpect render material parameters.*>>= ./inspect_rendermaterial_parameters.py $
+``` py : <<inpect render material parameters.*>>= ./inspect_rendermaterial_parameters.py $ template=rhipysrc.template
 import scriptcontext as sc
 import clr
 

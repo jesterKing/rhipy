@@ -10,7 +10,7 @@ In case you rather just get the final script, you can find it
 We'll assume for now that we are dealing with Rhino Custom or Rhino PBR
 materials.
 
-```py : <<the script.*>>= ./select_object_tweak_texture_mapping.py $
+```py : <<the script.*>>= ./select_object_tweak_texture_mapping.py $ template=rhipysrc.template
 <<imports>>
 <<assume already selected objects>>
 <<loop over objects and tweak texture>>

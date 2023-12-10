@@ -108,7 +108,7 @@ sc.doc.RenderMaterials.Add(new_pbr)
 In the end we have the entire script that creates us a PBR material with a
 texture in the base color slot.
 
-```py : <<create pbr with textures.*>>= ./create_pbr_material_with_textures.py $
+```py : <<create pbr with textures.*>>= ./create_pbr_material_with_textures.py $ template=rhipysrc.template
 import Rhino as rh
 import Rhino.Render as rr
 import Rhino.DocObjects as rd
