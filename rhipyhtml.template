@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta property="og:description" content="A literate program in the rhipy repository." />
@@ -7,5 +8,8 @@
 </head>
 <body>
 [CONTENT]
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+</script>
 </body>
-</html>`
+</html>
