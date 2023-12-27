@@ -54,14 +54,14 @@ accessing the PBR properties and setting the textures.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;create pbr material and jump through hoops&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># first create an empty PBR material</span>
+<pre><code>
 pbr_rm = rr.RenderContentType.NewContentFromTypeId(pbr_material_type_guid)
 
-<span class="hljs-comment"># to get to a Rhino.DocObjects.PhysicallyBasedMaterial we need to simulate the</span>
-<span class="hljs-comment"># render material first.</span>
+
+
 sim = pbr_rm.SimulatedMaterial(rr.RenderTexture.TextureGeneration.Allow)
 
-<span class="hljs-comment"># from the simulated material we can get the Rhino.DocObjects.PhysicallyBasedMaterial</span>
+
 pbr = sim.PhysicallyBased
 </code></pre>
 
@@ -78,9 +78,9 @@ the <code>PBR_BaseColor</code> slot, which we find through <code>Rhino.DocObject
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;set PBR properties and texture&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># now we have an instance of a type that has all the API you need to set the PBR</span>
-<span class="hljs-comment"># properties. For simple glass we set color to white, opacity to 0 and opacity</span>
-<span class="hljs-comment"># IOR to 1.52</span>
+<pre><code>
+
+
 pbr.Opacity = <span class="hljs-number">0.0</span>
 pbr.OpacityIOR = <span class="hljs-number">1.52</span>
 pbr.BaseColor = rh.Display.Color4f.White
@@ -105,12 +105,12 @@ table.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;convert into render material&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># convert it back to RenderMaterial</span>
+<pre><code>
 new_pbr = rr.RenderMaterial.FromMaterial(pbr.Material, sc.doc)
-<span class="hljs-comment"># Set a good name</span>
+
 new_pbr.Name = <span class="hljs-string">&quot;My Own PBR Glass&quot;</span>
 
-<span class="hljs-comment"># Add it to the document</span>
+
 sc.doc.RenderMaterials.Add(new_pbr)
 </code></pre>
 

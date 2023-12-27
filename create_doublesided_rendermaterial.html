@@ -39,7 +39,7 @@ the front and back slots we'll be using <a href="https://developer.rhino3d.com/a
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;if objects are selected create material and assign&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># only if we have a selection do the work</span>
+<pre><code>
 <span class="hljs-keyword">if</span> object_selection:
     <span class="literate-tag-name">&lt;&lt;create a double-sided material&gt;&gt;</span>
     <span class="literate-tag-name">&lt;&lt;assign material to object selection&gt;&gt;</span>
@@ -64,7 +64,7 @@ child slot name.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;create a double-sided material&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># create material</span>
+<pre><code>
 render_material = Rhino.Render.RenderContent.Create(
     System.Guid(<span class="hljs-string">&quot;E6CD1973-B739-496E-AB69-32957FA48492&quot;</span>),
     Rhino.Render.RenderContent.ShowContentChooserFlags.<span class="hljs-literal">None</span>,
@@ -95,10 +95,10 @@ random_color2 = Rhino.Display.Color4f(
     random.random(),
     random.random(),
     <span class="hljs-number">1.0</span>)
-<span class="hljs-comment"># set color for front material</span>
+
 front_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
 front_material.SetParameter(<span class="hljs-string">&quot;color&quot;</span>, random_color1)
-<span class="hljs-comment"># set color for back material</span>
+
 back_material.BeginChange(Rhino.Render.RenderContent.ChangeContexts.Program)
 back_material.SetParameter(<span class="hljs-string">&quot;color&quot;</span>, random_color2)
 render_material.EndChange()
@@ -114,7 +114,7 @@ document. We have to <code>CommitChanges()</code> on the object for the changes 
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;assign material to object selection&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># assign</span>
+<pre><code>
 <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> object_selection:
     <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Adding material&quot;</span>, render_material.Name, <span class="hljs-string">&quot;to&quot;</span>, ob)
     ob.RenderMaterial = render_material
@@ -171,7 +171,7 @@ selection no assignment will be made.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;determine selected objects&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># get object selection</span>
+<pre><code>
 object_selection = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> scriptcontext.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]
 
 </code></pre>

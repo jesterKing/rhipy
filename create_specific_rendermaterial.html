@@ -71,7 +71,7 @@ made.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;check for an object selection&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># get object selection</span>
+<pre><code>
 object_selection = [ob <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> scriptcontext.doc.Objects <span class="hljs-keyword">if</span> ob.IsSelected(<span class="hljs-literal">False</span>)]
 
 </code></pre>
@@ -82,7 +82,7 @@ object_selection = [ob <span class="hljs-keyword">for</span> ob <span class="hlj
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;if object selection exists create material and assign&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># only if we have a selection do the work</span>
+<pre><code>
 <span class="hljs-keyword">if</span> object_selection:
     <span class="literate-tag-name">&lt;&lt;create a paint material with random color&gt;&gt;</span>
     <span class="literate-tag-name">&lt;&lt;assign the material to the object selection&gt;&gt;</span>
@@ -101,7 +101,7 @@ is possible to do so with a script names should really be unique.</p>
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;create a paint material with random color&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># create material</span>
+<pre><code>
 render_material = Rhino.Render.RenderContent.Create(
     Rhino.Render.RenderMaterial.PaintMaterialGuid,
     Rhino.Render.RenderContent.ShowContentChooserFlags.<span class="hljs-literal">None</span>,
@@ -127,7 +127,7 @@ document. We have to <code>CommitChanges()</code> on the object for the changes 
 <div class="codefragment">
 <div class="fragmentname">&lt;&lt;assign the material to the object selection&gt;&gt;= </div>
 <div class="code">
-<pre><code><span class="hljs-comment"># assign</span>
+<pre><code>
 <span class="hljs-keyword">for</span> ob <span class="hljs-keyword">in</span> object_selection:
     <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Adding material&quot;</span>, render_material.Name, <span class="hljs-string">&quot;to&quot;</span>, ob)
     ob.RenderMaterial = render_material
